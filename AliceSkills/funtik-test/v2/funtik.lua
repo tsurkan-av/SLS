@@ -15,7 +15,6 @@ color_temp
 запрос	{\"request_type\":\"action\",\"request_data\":[{\"id\":\"0x00158D0007503021\",\"capabilities\":[{\"type\":\"devices.capabilities.color_setting\",\"state\":{\"instance\":\"temperature_k\",\"value\":4500}}]}]}
 --]]
 
---print("--------------funtik.lua-------------")
 local fn = (loadfile "/int/func.lib")()
 
 local query = ""
@@ -27,100 +26,41 @@ else
 end
 
 local out = {}
--- local devicesAlice = fn.json_decode(os.fileRead("/int/funtikData.json"), false)
-
 -- запрос на управление
--- в ответ на до формировать state
--- TODO переделать на данные только из запроса
-
+-- в action походу прилетает только одно действие, так что пох на тип ус-ва. вроде бы
+-- пока делаю безусловно. потом всё равно прилетает запрос состояния
+-- ответ формирую в YAFn
 if (query.request_type == "action") then 
-  local action_result_ok = {status = "DONE"}
-  local action_result_error = {status = "ERROR", error_code = "INVALID_ACTION", error_message = "Что-то пошло не так! См. лог SLS!"}
   for _, dev in pairs(query.request_data) do
     local device = dev.id
-    out[_] = {}
-    out[_].id = dev.id
-    out[_].capabilities = {}
-    out[_].properties = {}
-    
-    -- Лампа
-    if (devicesAlice.devices[dev.id].type == "light") then
-      -- разбираю умения (capabilities)
-      for capabKey, capability in pairs(dev.capabilities) do
-	    out[_].capabilities[capabKey] = {}
-      out[_].capabilities[capabKey].state = {}
-      out[_].capabilities[capabKey].state.action_result = {}
-      -- если прилетает color_setting, то разбираю на цвет и/или температуру
-      -- смотреть, что прилетает при изменении цвета или color_temp
-      -- ЧТО слать в устройство? temperature_k или color???
-      if (capability.type:find('color_setting')) then
-		    out[_].capabilities[capabKey].type = capability.type
-        -- если прилетает rgb, то цвет
-        if (capability.state.instance == "rgb") then
-		      out[_].capabilities[capabKey].state.instance = "rgb"
-            -- конвертирую int RGB в xy
-            local r,g,b = fn.int_to_rgb(capability.state.value)
-            local x, y = fn.rgb_to_cie(r,g,b)
-            local color = '{"x":' .. x .. ',"y":' .. y .. '}'
-            -- отправляю в устройство. если true, то пишу в out
-            if (zigbee.set(device, 'color', color)) then
-              out[_].capabilities[capabKey].state.action_result = action_result_ok
-            else
-              print('error set color to ', device)
-      			  out[_].capabilities[capabKey].state.action_result = action_result_error
-            end
-          -- если прилетает temperature_k, то цветовая температура
-          elseif (capability.state.instance == "temperature_k") then
-		        out[_].capabilities[capabKey].state.instance = "temperature_k"
-            -- конвертирую Кельвин в Mired
-            local temperature_k = math.ceil(1000000 / capability.state.value)
-            -- отправляю в устройство. если true, то пишу в out
-            if (zigbee.set(device, 'color_temp', temperature_k)) then
-              out[_].capabilities[capabKey].state.action_result = action_result_ok
-            else
-            -- здесь сформировать возврат ошибки - типа device_busy
-              print('error set color_temp to ', device)
-              out[_].capabilities[capabKey].state.action_result = action_result_error
-            end
-          end
-        elseif (capability.type:find('on_off')) then
-          out[_].capabilities[capabKey].type = capability.type
-          out[_].capabilities[capabKey].state.instance = "on"
-          -- если capability.state.value = true, то включить, иначе выключить
-          local dstState = ''
-          if (capability.state.value) then dstState = 'ON' else dstState = 'OFF' end
-          -- отправляю в устройство. если true, то пишу в out
-          if (zigbee.set(device, 'state', dstState)) then
-            out[_].capabilities[capabKey].state.action_result = action_result_ok
-          else
-            print('error set on_off to ', device)
-            out[_].capabilities[capabKey].state.action_result = action_result_error
-          end
-        -- если прилетает range, то в случае с лампой - яркость
-        elseif (capability.type:find('range')) then
-          out[_].capabilities[capabKey].type = capability.type
-          out[_].capabilities[capabKey].state.instance = "brightness"
-		      -- если прилетает brightness, то отправлять - 'включено' без включения, т.к. bri включит 
-          -- здесь пересчет яркости 100 -> 255 + в начале диапазона не конвертирую для мягкости
-          local brightness = capability.state.value
-          if (brightness > 5 and brightness <= 100) then brightness = math.ceil(brightness * 2.55) end 
-          -- отправляю в устройство. если true, то пишу в out
-          if (zigbee.set(device, 'brightness', brightness)) then
-            out[_].capabilities[capabKey].state.action_result = action_result_ok
-          else
-            out[_].capabilities[capabKey].state.action_result = action_result_error
-            print('error set brightness to ', device)
-          end
-        
-        end
+    -- разбираю умения (capabilities)
+    for _, capability in pairs(dev.capabilities) do
+      if (capability.state.instance == 'on') then -- вкл/выкл 
+        local dstState = ''
+        if (capability.state.value) then dstState = 'ON' else dstState = 'OFF' end
+        -- отправляю в устройство
+        if not (zigbee.set(device, 'state', dstState)) then print('error set on_off to ', device) end
+      elseif (capability.state.instance == "rgb") then -- цвет
+        -- конвертирую int RGB в xy
+        local r,g,b = fn.int_to_rgb(capability.state.value)
+        local x, y = fn.rgb_to_cie(r,g,b)
+        local color = '{"x":' .. x .. ',"y":' .. y .. '}'
+        -- отправляю в устройство
+        if not (zigbee.set(device, 'color', color)) then print('error set color to ', device) end
+      elseif (capability.state.instance == "temperature_k") then -- цветовая температура
+        -- конвертирую Кельвин в Mired
+        local temperature_k = math.ceil(1000000 / capability.state.value)
+        -- отправляю в устройство
+        if not (zigbee.set(device, 'color_temp', temperature_k)) then print('error set color_temp to ', device) end
+      elseif (capability.state.instance == "brightness") then -- яркость
+        local brightness = capability.state.value
+        if (brightness > 5 and brightness <= 100) then brightness = math.ceil(brightness * 2.55) end 
+        -- отправляю в устройство
+        if not (zigbee.set(device, 'brightness', brightness)) then print('error set brightness to ', device) end
+        -- TODO дополнительно включаю если выкл, т.к. может прилететь запрос только на яркость
       end
-    elseif (devicesAlice.devices[dev.id].type == "socket") then
-      --out[_].type = devicesAlice.devices[dev.id].type
     end
   end
-  --print(fn.json_encode(out))
-  -- вывод отключил, т.к. безусловно отдаем - всё хорошо)
-  
 -- запрос на обновление
 elseif (query.request_type == "query") then 
   for _, dev in pairs(query.request_data) do
@@ -186,5 +126,3 @@ elseif (query.request_type == "query") then
   end
   print(fn.json_encode(out))
 end
---out = json.encode(out)
-

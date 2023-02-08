@@ -1,10 +1,6 @@
 /***** TODO *****
 * Обработать Недоступность SLS
-v2
-переработать обработку ответа в УДЯ:
-	убрать ф-цию добавления - обработать в основном цикле
-	дорабоать ф-ции обновления и управления с учетом изменений в data.json
-	тоже для LUA 
+* Обработать таймаут ф-ции
 */
 /** 
 * ответ при проблеме серта Keenetic 
@@ -37,7 +33,7 @@ module.exports.handler = async (event, context) => {
 			const replacer = new RegExp('"', 'g')
 			const devicesQueryJson = JSON.stringify(devicesQuery).replace(replacer, '\\"');
 			slsApiFn = "scripts";
-			slsApiParam = "&action=evalFile&path=/funtik.lua&param=" + devicesQueryJson;
+			slsApiParam = "&action=evalFile&path=/funtik2.lua&param=" + devicesQueryJson;
 			url = slsUrl + slsApiFn + slsToken + slsApiParam;
 			// запрос на управление. ответ не ждать, т.к. вроде бы не нужен он
 			devicesSLS = httpGet(url, true);
