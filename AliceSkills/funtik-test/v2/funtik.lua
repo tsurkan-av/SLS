@@ -31,6 +31,8 @@ local out = {}
 
 -- запрос на управление
 -- в ответ на до формировать state
+-- TODO переделать на данные только из запроса
+
 if (query.request_type == "action") then 
   local action_result_ok = {status = "DONE"}
   local action_result_error = {status = "ERROR", error_code = "INVALID_ACTION", error_message = "Что-то пошло не так! См. лог SLS!"}
