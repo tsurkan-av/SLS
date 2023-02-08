@@ -69,14 +69,6 @@ module.exports.handler = async (event, context) => {
 			devicesSLS = await httpGet(url, true);
 			if (devicesSLS.success) {
 				devicesSLS = isJson(devicesSLS.result);
-				/*
-				if (devicesSLS) {
-					Object.entries(devicesSLS).forEach((entry) => {
-						const [key, device] = entry;
-						devicesAlice.push(updDeviceAlice(device));
-					});
-				} 
-				*/
 			}
 			result = {
 				request_id,
@@ -129,63 +121,4 @@ async function httpGet(url, mode) {
 	} else {
 		return response.text();
 	}
-}
-/***************** Create Update Device Payload **********/
-function updDeviceAlice(device) {
-	const deviceType = device.type;
-	const deviceColorScheme = device.color;
-	let capabilities, color, type;
-	switch (deviceType) {
-		case 'light': { // Лампа
-			capabilities = [];
-			capabilities.push({
-				"type": "devices.capabilities.range",
-				"state": {
-					"instance": "brightness",
-					"value": device.brightness
-				}
-			});
-			capabilities.push({
-				"type": "devices.capabilities.on_off",
-				"state": {
-					"instance": "on",
-					"value": device.state == "ON" ? true : false
-				}
-			});
-			capabilities.push({
-				"type": "devices.capabilities.color_setting",
-				"state": 
-				{
-					"instance": "temperature_k",
-					"value": device.color_temp
-				}
-			});
-			// если лампа может управлят цветом, то добавляем цветовую модель
-			if (device.color) {
-				/*
-				let color = isJson(device.color);
-				if (color) {
-					color = rgbToInt(cie_to_rgb(color.x, color.y));
-				} else {
-					color = 0;
-				}
-				*/
-				capabilities.push({
-					"type": "devices.capabilities.color_setting",
-					"state": 
-					{
-						"instance": "rgb",
-						"value": device.color
-					}
-				});
-			}
-			break;
-		}
-		default:
-		break;
-	}
-	return {
-		"id": device.id,
-		"capabilities": capabilities,
-	};
 }
