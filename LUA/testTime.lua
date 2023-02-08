@@ -8,7 +8,7 @@ local f = { _version = "0.1.1" }
 * checkState: true - если требуется проверка состояния. Если текущее значение не равно value 
 --]]
 -- TODO - доделать возврат result
-local function zigbeeAction(device, state, value[, checkState, checkGet])
+local function zigbeeAction(device, state, value, checkState, checkGet)
   local result = {}
   if checkState then
     if checkGet then
