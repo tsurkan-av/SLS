@@ -6,8 +6,10 @@
             {
             "states":
                 [
-                "temperature",
-                "humidity"
+                "state",
+                "brightness",
+                "color_temp",
+                "color"
                 ],
             "type": "sensor"
             },
