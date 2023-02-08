@@ -1,0 +1,45 @@
+Позволяет ускорить исполнение скриптов за счет исключения чтений с флэшки
+
+получилось реализовать так:
+в объект помещается строка до 256 lat символов с кодом функции
+строка забирается obj.get() в переменную 
+если код не вмещается в 256 символов, склеивать из нескольких объектов
+	возможно также заюзать val и oldVal - итого один объект 512 символов
+создается функция через загрузку строки load()
+полученная функция может видеть переменные, объявленные и инициализированные до вызова функции
+Пример:
+
+a = {'w',1,2,3,'testVal'} -- таблицу можно заюзать для передачи параметров в функцию
+obj.set('func', 'a[5]="test" return a[5]') -- грузим в объект func код функции, например из файла
+tst,t1,t2 = obj.get('func') -- в переменную tst грузим строку из объекта
+test = load(tst) -- из переменной tst создаем функцию test
+
+в код можно включать локальные функции. у них также будет доступ к глобальным переменным
+
+Пример с val + oldVal 256+256
+o1 = 'v1="KSHKCHGFHGSHXNGHNGFHgkxjbfchgsfhjxghnghfjgshfgh" v2="kjsahcjhaKSHKCHGFHGSHXN1HNGFHgkxjbfchgsfhjxghnghjgshfghjgfchgjshgfhkzjd" v3="ljvcmijgkjsahcjhaKSHKCHGFHGSHXNGHNGFHgkxjbfchgsfhjxghnghfjgshfghjgfchgjs" v4="ljvcmijgkjsahcjhaKSHKCHGFHGSHXNGHNGFHgkxjbf'
+o2 = 'hgsfhjxghnghfjgshfghjgfchgjs" v5="hgfhkzjdkijcljvcmijgkjsahcjhaKSHKCHGFHGSHXNGHNGFHgkxjbfchgsfhjxghnghfjgshfgh" v6="mijgkjsahcjhaKSHKCHGFHGSHXN1HNGFHgkxjbfchgsfhjxghnghfjgshfghjgfchgjshgfhkzjd" local function fu(c) return a[1] end a[5]=123 return fu(a[2])'
+obj.set('functions', o2) -- уйдет в oldVal
+obj.set('functions', o1) -- останется в currVal
+o1,o2 = obj.get('functions') -- грузим из объекта
+test = load(o1 .. o2) -- создаем функцию
+
+попробуем создать 10 объектов с val + oldVal
+
+o1 = 'v1="KSHKCHGFHGSHXNGHNGFHgkxjbfchgsfhjxghnghfjgshfgh" v2="kjsahcjhaKSHKCHGFHGSHXN1HNGFHgkxjbfchgsfhjxghnghjgshfghjgfchgjshgfhkzjd" v3="ljvcmijgkjsahcjhaKSHKCHGFHGSHXNGHNGFHgkxjbfchgsfhjxghnghfjgshfghjgfchgjs" v4="ljvcmijgkjsahcjhaKSHKCHGFHGSHXNGHNGFHgkxjbf'
+o2 = 'hgsfhjxghnghfjgshfghjgfchgjs" v5="hgfhkzjdkijcljvcmijgkjsahcjhaKSHKCHGFHGSHXNGHNGFHgkxjbfchgsfhjxghnghfjgshfgh" v6="mijgkjsahcjhaKSHKCHGFHGSHXN1HNGFHgkxjbfchgsfhjxghnghfjgshfghjgfchgjshgfhkzjd" local function fu(c) return a[1] end a[5]=123 return fu(a[2])'
+obj.set('f1', o2)
+obj.set('f1', o1)
+...
+...
+obj.set('f0', o2)
+obj.set('f0', o1)
+
+сразу 10 			- ok
+итого 256+256*10 = 5120 символов)
+на памяти вроде особо не отразилось
+----------------------------------------
+Все таки получилось и так
+local fc1 = string.dump(function(a, b, e) return e end)
+local set = load(fc1)
+print(set(1,2,3))

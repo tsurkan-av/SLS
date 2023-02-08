@@ -1,0 +1,392 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>SLS Gateway: Dashboard </title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <link rel="icon" href="https://cdn.slsys.io/assets/2022.01.29d1/favicon.png" type="image/x-icon">
+</head>
+
+<body id="page-top">
+
+  <style>
+    body {
+      box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+      background-color: #333;
+    }
+
+    main {
+      padding-top: .5rem !important; /* отступ сверху. было 4.5rem для верхнего меню */
+      min-height: 100vh !important;
+    }
+
+    .fa {
+      font-size: 15px;
+    }
+    
+    .form-switch {
+      padding-bottom: 7px;
+    }
+
+    .card-cont {
+      padding-bottom: 15px;
+    }
+
+    .bages {
+      padding-bottom: 7px;
+    }
+  </style>
+
+  <main role="main" class="">
+    <div class="container-fluid flex-column">
+      <div class="row" id="rooms_cont">
+      </div>
+    </div>
+  </main>
+
+  <script>
+
+    // room - имя комнаты
+    // ieee - ieeeAddr со страницы девайсов
+    // prop - свойство, которое будет выводиться/управляться данным элементом (switch поддерживают только ON/OFF)
+    // title - заголовок девайса
+    // type - тип устройства (пока в наличии 4 типа:
+    // -- sensor - обыкновенный цифровой сенсор
+    // -- bin-sensor - двоичный сенсор (true/false дд, датчик положения, дачик открытия)
+    // -- switch - тумблер (ON/OFF)
+    // -- dimmer - слайдер
+	// -- personesTracker
+	//		prop: showInactive
+    // icon - иконка девайса (пока поддерживается для sensor, bin-sendor, иконки брать тут https://fontawesome.com/v4.7.0/icons/)
+    // unit - единица измерения (для типа sensor)
+    // min - минимальное значение (для типа dimmer)
+    // max - максимальное значение (для типа dimmer)
+
+    const devices = [
+	  // Объекты
+	  // persones tracker. Значение Объекта должно быть валидный JSON
+	  { "ieee": "fullHouse", "room": "Люди", "title": "Люди", "type": "personesTracker", "icon": "fa-user-o", "showInactive": true  },
+	  // будильник
+	  { "ieee": "test", "room": "Настройки", "prop": "objectProperty", "title": "Будильник", "type": "switch", "icon": "fa-user-o", "unit": "" },
+	  // Спальня
+	  { "ieee": "0xA4C138E143F426BA", "room": "Спальня", "prop": "temperature", "title": "Температура", "type": "sensor", "icon": "fa-thermometer-half", "unit": "°C" },
+      { "ieee": "0xA4C138E143F426BA", "room": "Спальня", "prop": "humidity", "title": "Влажность", "type": "sensor", "icon": "fa-tint", "unit": "%" },
+      { "ieee": "0x00158D0007503021", "room": "Спальня", "prop": "state", "title": "Люстра", "type": "switch" },
+	  { "ieee": "0x00158D0007503021", "room": "Спальня", "prop": "brightness", "title": "Яркость люстры", "type": "dimmer", "min": 0, "max": 255 },
+	  { "ieee": "0x00158D0007503021", "room": "Спальня", "prop": "color_temp", "title": "Цвет люстры", "type": "dimmer", "min": 170, "max": 380 },
+      { "ieee": "0xA4C138FD68EAA226", "room": "Спальня", "prop": "state", "title": "Ночник", "type": "switch" },
+	  { "ieee": "0xA4C138FD68EAA226", "room": "Спальня", "prop": "brightness", "title": "Яркость ночника", "type": "dimmer", "min": 0, "max": 255 },
+	  { "ieee": "0xA4C138AAA29895A8", "room": "Спальня", "prop": "state", "title": "Увлажнитель", "type": "switch" },
+	  { "ieee": "0xA4C1383C08AC4698", "room": "Спальня", "prop": "state", "title": "Сабвуфер", "type": "switch" },
+      // Кухня
+      { "ieee": "0xA4C138E7524A230B", "room": "Кухня", "prop": "temperature", "title": "Температура", "type": "sensor", "icon": "fa-thermometer-half", "unit": "°C" },
+      { "ieee": "0xA4C138E7524A230B", "room": "Кухня", "prop": "humidity", "title": "Влажность", "type": "sensor", "icon": "fa-tint", "unit": "%" },
+	  // Прихожая
+	  { "ieee": "0xA4C138D8A539DB0F", "room": "Прихожая", "prop": "state", "title": "Свет", "type": "switch" },
+	  { "ieee": "0x00158D00039272A5", "room": "Прихожая", "prop": "contact", "title": "Вход", "type": "bin-sensor", "icon": "fa-square" },
+	  // Улица
+	  { "ieee": "0x00158D00089762DB", "room": "Улица", "prop": "temperature", "title": "Температура", "type": "sensor", "icon": "fa-thermometer-half", "unit": "°C" },
+      { "ieee": "0x00158D00089762DB", "room": "Улица", "prop": "humidity", "title": "Влажность", "type": "sensor", "icon": "fa-tint", "unit": "%" },
+      { "ieee": "0x00158D00089762DB", "room": "Улица", "prop": "pressure_mmHg", "title": "Давление", "type": "sensor", "icon": "fa-gauge", "unit": "mmHg" },
+	  
+
+// TODO сделать адрес FN, при загрузке devices.json добавлять ieeeAddr
+// TODO переделать исходный массив pTrackerData.json с нумерацией для сортировки табличек с людьми
+// TODO сделать вывод статуса подключения к сокету
+
+      // { "ieee": "", "room": "", "prop": "brightness", "title": "Яркость подсветки шкафа", "type": "dimmer", "min": 0, "max": 255 },
+    ];
+ 
+    document.addEventListener('DOMContentLoaded', async () => {
+	  // запрос всех устройств
+	  const allDevicesInfo = await httpGet('/api/zigbee/devices');
+      // запрос всех объектов
+	  const allObjectsInfo = await httpGet('/api/obj');
+	  // создаю коллекцию rooms - это карточки - комнаты
+      const rooms = new Map();
+      devices.forEach((device) => {
+        if (rooms.has(device.room)) { // если есть карточка с именем room, то device добавить в карточку комнаты
+          rooms.get(device.room).push(device);
+        } else { // иначе создать новую карточку и device добавить в неё
+          rooms.set(device.room, [device]);
+        }
+      });
+      let roomId = 0;
+	  // формируется лента из карточек (комнат)
+      rooms.forEach((roomDevices, roomTitle) => {
+        rooms_cont.insertAdjacentHTML('beforeend', createRoomHtml(roomId, roomTitle));
+        feedRoom(roomId, roomDevices, allDevicesInfo, allObjectsInfo.result);
+        roomId++;
+      });
+      startWebSockets();
+    });
+
+    function createRoomHtml(roomId, roomTitle) {
+      const l = `
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 card-cont">
+          <div class="card h-100">
+            <div class="card-header">${roomTitle}</div>
+            <div class="card-body" id="room_${roomId}">
+              <div id="bages_${roomId}" class="bages">
+              </div>
+            </div>
+          </div>
+		  
+        </div>`
+      return l;
+    }
+	
+	// обработка ленты карточек с устройствами: 
+	// - отображение, если устройство найдено в devices.json
+	// - обновление значений
+	// - управление устройствами
+    function feedRoom(roomId, roomDevices, allDevices, allObjects) {
+      const badgesDiv = document.getElementById(`bages_${roomId}`);
+      const roomDiv = document.getElementById(`room_${roomId}`);
+      roomDevices.forEach((roomDevice, roomDeviceId) => {
+        const aDeviceInfo = allDevices.find((device) => roomDevice.ieee === device.ieeeAddr);
+		const aObjectInfo = allObjects.find((object) => roomDevice.ieee === object.name);
+        if (!aDeviceInfo) { // если устройства нет в СЛС
+		  if (aObjectInfo) { // если object 
+			roomDevice.value = aObjectInfo.value; // если объект есть в СЛС, значение объекта
+		  } else {
+			  console.log('Unable to find device/object info for', roomDevice);
+			  return;
+		  }
+        } else {
+			roomDevice.value = aDeviceInfo.st[roomDevice.prop]; // если устройство есть в СЛС, значение состояния устройства
+		}
+        roomDevice.id = `${roomId}_${roomDeviceId}`;
+
+        switch (roomDevice.type) {
+
+          case 'personesTracker': {
+			const personesTrackerInfo = isJson(roomDevice.value);
+			if (personesTrackerInfo) {
+				const iconDom = roomDevice.icon ? `<i class="fa ${roomDevice.icon}" aria-hidden="true fa-lg " ></i>` : '';
+				Object.entries(personesTrackerInfo).forEach((personeDev) => {
+					if (personeDev[1].name) {
+						let badgeBgColor = "secondary";
+						if (personeDev[1].active) {	badgeBgColor = "success"; }
+						const badgeDom = `
+						  <div class="badge bg-${badgeBgColor}" title="${roomDevice.title}" id="pers_${personeDev[0]}">
+							<div style="display: table">
+							  <div style="display: table-row">
+								<label style="display: table-cell">${iconDom}</label>
+							  </div>
+							  <div style="display: table-row">
+								<label style="display: table-cell">${personeDev[1].name}</label>
+							  </div>
+							</div>
+						  </div>
+						`;
+						badgesDiv.insertAdjacentHTML("beforeend", badgeDom);
+					}
+				});
+			}
+            break;
+          }
+		  case 'sensor': {
+            const iconDom = roomDevice.icon ? `<i class="fa ${roomDevice.icon}" aria-hidden="true"></i>` : '';
+            const badgeDom = `
+              <div class="badge bg-secondary" title="${roomDevice.title}">
+                ${iconDom}
+                <div style="display:inline" id="dev_${roomDevice.id}">
+                  ${roomDevice.value}
+                </div>
+                ${roomDevice.unit}
+              </div>
+            `;
+            badgesDiv.insertAdjacentHTML('beforeend', badgeDom);
+            break;
+          }
+          case 'bin-sensor': {
+            const iconDom = roomDevice.icon ? `<i class="fa ${roomDevice.icon}" aria-hidden="true"></i>` : '';
+            const badgeDom = `
+              <div class="badge bg-${roomDevice.value ? 'warning' : 'secondary'}" id="dev_${roomDevice.id}" title="${roomDevice.title}">
+                ${iconDom}
+              </div>
+            `;
+            badgesDiv.insertAdjacentHTML('beforeend', badgeDom);
+            break;
+          }
+          case 'switch': {
+            const switchDom = `
+              <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="dev_${roomDevice.id}" ${roomDevice.value === 'ON' ? 'checked' : ''}>
+                <label class="form-check-label" for="dev_${roomDevice.id}">
+                  ${roomDevice.title}
+                </label>
+              </div>
+            `;
+
+            roomDiv.insertAdjacentHTML('beforeend', switchDom);
+            document.getElementById(`dev_${roomDevice.id}`).addEventListener('change', async function () {
+              this.disabled = true;
+              await setState(roomDevice.ieee, roomDevice.prop, this['checked'] ? 'ON' : 'OFF');
+              this.disabled = false;
+            });
+            break;
+          }
+          case 'dimmer': {
+            const rangeDom = `<input type="range" class="form-range" id="dev_${roomDevice.id}" value="${roomDevice.value}" min="${roomDevice.min}" max="${roomDevice.max}">`;
+
+            roomDiv.insertAdjacentHTML('beforeend', rangeDom);
+            document.getElementById(`dev_${roomDevice.id}`).addEventListener('change', async function () {
+              this.disabled = true;
+              await setState(roomDevice['ieee'], roomDevice['prop'], this.value);
+              this.disabled = false;
+            });
+            break;
+          }
+          default:
+            break;
+        }
+      });
+    }
+	
+	
+	// обновление данных в карточке устройства при изменении его состояния по данным, полченным из web-сокета
+    function deviceUpdate(e) {
+		
+		const device = devices.find((device) => e.payload.ieeeAddr === device.ieee && e.payload.name === device.prop);
+		const object = devices.find((object) => e.payload.event === 'objChange' && e.payload.name === object.ieee);
+
+		if (object) {
+			object.value = e.payload.value;
+			switch (object.type) {
+				case "personesTracker":
+				// TODO когда в общем будет нормально JSON отдаваться - переделать без парсинга
+					object.value = isJson(object.value.replaceAll("\\", ""))
+					if (object.value) {
+						Object.entries(object.value).forEach((personeDev) => {
+							console.log(personeDev);
+							if (personeDev[1].name) {
+								if (personeDev[1].active === true) {
+									document.getElementById(`pers_${personeDev[0]}`).classList.add('bg-success');
+									document.getElementById(`pers_${personeDev[0]}`).classList.remove(`bg-secondary`);
+								} else {
+									document.getElementById(`pers_${personeDev[0]}`).classList.remove('bg-success');
+									document.getElementById(`pers_${personeDev[0]}`).classList.add(`bg-secondary`);
+								}
+							}
+						});
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		
+	  if (device) {
+        device.value = e.payload.value;
+        switch (device.type) {
+          case 'sensor':
+            document.getElementById(`dev_${device.id}`).innerHTML = device.value;
+            break;
+          case 'bin-sensor':
+            if (device.value === true) {
+              document.getElementById(`dev_${device.id}`).classList.add('bg-warning');
+              document.getElementById(`dev_${device.id}`).classList.remove(`bg-secondary`);
+            } else {
+              document.getElementById(`dev_${device.id}`).classList.remove('bg-warning');
+              document.getElementById(`dev_${device.id}`).classList.add(`bg-secondary`);
+            }
+            break;
+          case 'switch':
+            document.getElementById(`dev_${device.id}`).checked = device.value === 'ON';
+            break;
+          case 'dimmer':
+            document.getElementById(`dev_${device.id}`).value = device.value;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
+    let startedWebSockets = false;
+    let wsSocket;
+    let wsTimer = 0;
+	// подключение к web-сокету SLS на 81 порт и подписка на обновление состояния устройств
+    function startWebSockets() {
+      let serverUrl = `ws://${window.location.hostname}:81/log`;
+      try {
+        console.log(`Connecting to ${serverUrl}`);
+        wsSocket = new WebSocket(serverUrl)
+      } catch (err) {
+        console.error(`Failed connecting to ${serverUrl}`, err);
+        return false;
+      }
+      wsSocket.binaryType = 'blob';
+      wsSocket.onopen = function (j) {
+        console.log('WS connected');
+        startedWebSockets = true;
+        clearTimeout(wsTimer);
+        subscribeToDevices(); // подписка на обновление состояния устройств
+      };
+      wsSocket.onmessage = function (message) { // при обновлении состояния устройства, обновить значение в карточке функцией deviceUpdate()
+        console.log(`WS data`);
+        const data = JSON.parse(message.data);
+        console.log(`Action: ${data.category} Data: `, data);
+        deviceUpdate(data);
+      }
+      wsSocket.onclose = function (j) {
+        startedWebSockets = false;
+        wsTimer = setTimeout('startWebSockets();', 5 * 1000);
+        console.log('WS disconnected');
+      }
+    }
+	// подписка на изменения состояния устройств и объектов
+    function subscribeToDevices() {
+      console.log('Sending menu subscription request...');
+	  wsSocket.send(JSON.stringify({
+        action: 'subscribe',
+		category: 'zigbee',
+      }));
+      wsSocket.send(JSON.stringify({
+        action: 'subscribe',
+        category: 'objects',
+      }));
+      return false;
+    }
+	// функция HTTP запроса 
+    async function httpGet(url) {
+      console.log('starting http get');
+      const response = await fetch(url);
+      if (response.status !== 200) {
+        throw new Error('Network response was not 200', response);
+      }
+      return response.json();
+    }
+	// функция парсинга JSON. При успехе возвращает Object(JSON), иначе false
+	function isJson(str) {
+		try {
+			return JSON.parse(str); 
+		} catch (e) {
+			return false;
+		}
+	}
+	// функция управления устройствами
+    function setState(device, name, value) {
+      return httpGet(`/api/zigbee?dev=${device}&action=setState&name=${name}&value=${value}`);
+    }
+	// функция управления объектами
+    function setObj(object, value) {
+      return httpGet(`/api/obj?name=${object}&value=${value}`);
+    }
+
+  </script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.js"
+    integrity="sha256-b6FZhfBs07Z8WHg4IG6V1PfDsOrbkQVabKBUzmlYbsU=" crossorigin="anonymous"></script>
+</body>
+
+</html>

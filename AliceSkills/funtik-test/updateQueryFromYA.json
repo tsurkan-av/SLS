@@ -1,0 +1,18 @@
+{
+"request_data":
+    [
+        {
+        "custom_data":
+            {
+            "states":
+                [
+                "temperature",
+                "humidity"
+                ],
+            "type": "sensor"
+            },
+        "id": "0xA4C138E143F426BA"
+        }
+    ],
+"request_type": "query"
+}

@@ -1,0 +1,35 @@
+{
+  "request_id": "1111-aaaa-2222-bbbb",
+  "payload": {
+      "devices": [{
+          "id": "abc-123",
+          "capabilities": [{
+              "type": "devices.capabilities.color_setting",
+              "state": {
+                  "instance": "hsv",
+                  "action_result": {
+                      "status": "ERROR",
+                      "error_code": "INVALID_ACTION",
+                      "error_message": "the human readable error message"
+                  }
+              }
+          },
+          {
+              "type": "devices.capabilities.on_off",
+              "state": {
+                  "instance": "on",
+                  "action_result": {
+                      "status": "DONE"
+                  }
+              }
+          }]
+     },
+     {
+        "id": "sock-56GF-3",
+        "action_result": {
+          "status": "ERROR",
+          "error_code": "DEVICE_UNREACHABLE"
+        }
+     }]
+  }
+}

@@ -1,0 +1,40 @@
+{
+    "request_id": "1111-aaaa-2222-bbbb",
+    "payload": {
+        "devices": [{
+            "id": "abc-123",
+            "capabilities": [{
+                "type": "devices.capabilities.color_setting",
+                "state": {
+                    "instance": "hsv",
+                    "value": {
+                        "h": 255,
+                        "s": 50,
+                        "v": 100
+                    }
+                }
+            }, {
+                "type": "devices.capabilities.on_off",
+                "state": {
+                    "instance": "on",
+                    "value": true
+                }
+            }]
+        },
+        {
+            "id": "abc-123",
+            "error_code": "DEVICE_NOT_FOUND",
+            "error_message": "the human readable error message"
+        }, 
+        {
+            "id": "sock-56GF-3",
+            "capabilities": [{
+                "type": "devices.capabilities.on_off",
+                "state": {
+                    "instance": "on",
+                    "value": true
+                }
+            }]
+        }]
+    }
+}

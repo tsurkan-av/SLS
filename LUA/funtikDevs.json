@@ -1,0 +1,42 @@
+{
+	"common": {
+		"color_temp_ratio": 18,
+		"percent100_ratio": 2.55
+	},
+	"devices": {
+		"0x00158D0007503021": {
+			"name": "Люстра",
+			"friendly_name": "lmp_bedroom",
+			"ieeeAddr": "0x00158D0007503021",
+			"room": "Спальня",
+			"type": "light",
+			"color_setting": {
+				"temperature_k": {
+					"min": 2700,
+					"max": 6500,
+					"precision": 1
+				}
+			}
+		},
+		"0xA4C138FD68EAA226": {
+			"name": "Ночник",
+			"friendly_name": "lmp_bedroom-nightlight-papa",
+			"ieeeAddr": "0xA4C138FD68EAA226",
+			"room": "Спальня",
+			"type": "light",
+			"color_setting": {
+				"color_model": "rgb",
+				"temperature_k": {
+					"min": 2700,
+					"max": 6500,
+					"precision": 1
+				}
+			}
+		}
+	},
+	"objects": {
+		"name": "Люди",
+		"type": "personesTracker"
+
+	}
+}

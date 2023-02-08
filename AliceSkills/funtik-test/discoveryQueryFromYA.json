@@ -1,0 +1,9 @@
+{
+"api_version": 1.0,
+"headers":
+  {
+  "authorization": "Bearer 123qwe456a...",
+  "request_id": "1111-aaaa-2222-bbbb"
+  },
+"request_type": "discovery"
+}

@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head><meta charset="utf-8">  <link rel="icon" href="https://cdn.slsys.io/assets/2022.01.29d1/favicon.png" type="image/x-icon"></head>
+<body>
+  <style>body {background-color: #333;}</style>
+  
+  <script>
+	document.addEventListener('DOMContentLoaded', async () => {
+	  //const allDevicesInfo = await httpGet('/api/zigbee/devices');
+
+    });
+
+
+/***************** Functions ******************************/
+	
+	// функция HTTP запроса 
+    async function httpGet(url) {
+      console.log('starting http get');
+      const response = await fetch(url);
+      if (response.status !== 200) {
+        throw new Error('Network response was not 200', response);
+      }
+      return response.json();
+    }
+
+	// функция парсинга JSON. При успехе возвращает Object(JSON), иначе false
+	function isJson(str) {
+		try {
+			return JSON.parse(str); 
+		} catch (e) {
+			return false;
+		}
+	}
+
+
+  </script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.js" integrity="sha256-b6FZhfBs07Z8WHg4IG6V1PfDsOrbkQVabKBUzmlYbsU=" crossorigin="anonymous"></script>
+</body>
+
+</html>

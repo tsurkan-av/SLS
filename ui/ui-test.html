@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+<head><meta charset="utf-8">  <link rel="icon" href="https://cdn.slsys.io/assets/2022.01.29d1/favicon.png" type="image/x-icon"></head>
+<body>
+  <style>body {background-color: #333;}</style>
+  
+  <script>
+  
+	document.addEventListener('DOMContentLoaded', async () => {
+	  //const allDevicesInfo = await httpGet('/api/zigbee/devices');
+
+
+	  const devicesAlice = [];
+	  //const url = '/api/storage?path=/int/funtikData2.json';
+	  ///api/scripts?action=evalFile&path=/funtik.lua&param=
+	  const url = '/api/scripts?action=evalFile&path=/funtik.lua';
+	  devicesSLS = await httpGet(url);
+	  console.log("devicesSLS", devicesSLS);
+		/*
+		if (devicesSLS.success) {
+			devicesSLS = isJson(devicesSLS.result);
+			if (devicesSLS) {
+				console.table("devicesSLS", devicesSLS);
+				
+				Object.entries(devicesSLS).forEach((entry) => {
+					const [key, device] = entry;
+					console.log("entry", device);
+					
+					devicesAlice.push(updDeviceAlice(device));
+				});
+			} 
+		}
+	*/
+	
+
+
+    });
+
+
+/***************** Functions ******************************/
+	
+	// функция HTTP запроса 
+    async function httpGet(url) {
+      console.log('starting http get');
+	  //const response = await fetch(url);
+	  
+	  const body = 'param: {"request_type":"query","payload":{"devices":[{"id":"0xA4C138FD68EAA226"}]}}';
+      const response = await fetch(url, {
+		method: 'POST',
+		body: body,
+		headers: {'Content-Type': 'application/json'}
+		});
+      if (response.status !== 200) {
+        throw new Error('Network response was not 200', response);
+      }
+      return response.json();
+    }
+
+	// функция парсинга JSON. При успехе возвращает Object(JSON), иначе false
+	function isJson(str) {
+		try {
+			return JSON.parse(str); 
+		} catch (e) {
+			return false;
+		}
+	}
+
+
+  </script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.js"
+    integrity="sha256-b6FZhfBs07Z8WHg4IG6V1PfDsOrbkQVabKBUzmlYbsU=" crossorigin="anonymous"></script>
+</body>
+
+</html>

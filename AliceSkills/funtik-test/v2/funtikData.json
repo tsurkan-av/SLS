@@ -1,0 +1,174 @@
+{
+	"devices": [{
+			"name": "Люстра",
+			"description": "lmp_bedroom",
+			"id": "0x00158D0007503021",
+			"room": "Спальня",
+			"type": "devices.types.light",
+			"custom_data": {
+				"type": "light",
+				"states": ["state", "brightness", "color_temp"]
+			},
+			"capabilities": [{
+					"type": "devices.capabilities.range",
+					"retrievable": true,
+					"parameters": {
+						"instance": "brightness",
+						"unit": "unit.percent",
+						"range": {
+							"min": 0,
+							"max": 100,
+							"precision": 1
+						}
+					}
+				},
+				{
+					"type": "devices.capabilities.color_setting",
+					"retrievable": true,
+					"parameters": {
+						"temperature_k": {
+							"min": 2700,
+							"max": 6500,
+							"precision": 1
+						}
+					}
+				},
+				{
+					"type": "devices.capabilities.on_off",
+					"retrievable": true
+				}
+			]
+		},
+		{
+			"name": "Ночник",
+			"description": "lmp_bedroom-nightlight-papa",
+			"id": "0xA4C138FD68EAA226",
+			"room": "Спальня",
+			"type": "devices.types.light",
+			"custom_data": {
+				"type": "light",
+				"states": ["state", "brightness", "color_temp", "color"]
+			},
+			"capabilities": [{
+					"type": "devices.capabilities.range",
+					"retrievable": true,
+					"parameters": {
+						"instance": "brightness",
+						"unit": "unit.percent",
+						"range": {
+							"min": 0,
+							"max": 100,
+							"precision": 1
+						}
+					}
+				},
+				{
+					"type": "devices.capabilities.color_setting",
+					"retrievable": true,
+					"parameters": {
+						"color_model": "rgb",
+						"temperature_k": {
+							"min": 2700,
+							"max": 6500,
+							"precision": 1
+						}
+					}
+				},
+				{
+					"type": "devices.capabilities.on_off",
+					"retrievable": true
+				}
+			]
+		},
+		{
+			"name": "Климат",
+			"description": "dht_bedroom",
+			"id": "0xA4C138E143F426BA",
+			"room": "Спальня",
+			"type": "devices.types.sensor",
+			"custom_data": {
+				"type": "sensor",
+				"states": ["temperature", "humidity"]
+			},
+			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "temperature",
+					"unit": "unit.temperature.celsius"
+				}
+			}, {
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "humidity",
+					"unit": "unit.percent"
+				}
+			}]
+		},
+		{
+			"name": "Климат",
+			"description": "dht_kitchen",
+			"id": "0xA4C138E7524A230B",
+			"room": "Кухня",
+			"type": "devices.types.sensor",
+			"custom_data": {
+				"type": "sensor",
+				"states": ["temperature", "humidity"]
+			},
+			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "temperature",
+					"unit": "unit.temperature.celsius"
+				}
+			}, {
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "humidity",
+					"unit": "unit.percent"
+				}
+			}]
+		},
+		{
+			"name": "Климат",
+			"description": "dht_bedroom-out",
+			"id": "0x00158D00089762DB",
+			"room": "Улица",
+			"type": "devices.types.sensor",
+			"custom_data": {
+				"type": "sensor",
+				"states": ["temperature", "humidity", "pressure"]
+			},
+			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "temperature",
+					"unit": "unit.temperature.celsius"
+				}
+			}, {
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "humidity",
+					"unit": "unit.percent"
+				}
+			}, {
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "pressure",
+					"unit": "unit.pressure.mmhg"
+				}
+			}]
+		}
+	],
+	"objects": {
+		"name": "Люди",
+		"type": "personesTracker"
+
+	}
+}

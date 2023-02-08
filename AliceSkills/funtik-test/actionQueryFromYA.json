@@ -1,0 +1,24 @@
+{
+    "request_data": [
+        {
+            "capabilities": [
+                {
+                    "state": {
+                        "instance": "rgb",
+                        "value": 16749000
+                    },
+                    "type": "devices.capabilities.color_setting"
+                },
+                {
+                    "state": {
+                        "instance": "on",
+                        "value": false
+                    },
+                    "type": "devices.capabilities.on_off"
+                }
+            ],
+            "id": "0xA4C138FD68EAA226"
+        }
+    ],
+    "request_type": "action"
+}

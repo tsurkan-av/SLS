@@ -1,0 +1,41 @@
+{
+    "id": "0xA4C138FD68EAA226",
+    "name": "НочникF",
+    "description": "lmp_bedroom-nightlight-papa",
+    "room": "Спальня",
+    "type": "devices.types.light",
+    "capabilities": [{
+            "type": "devices.capabilities.range",
+            "retrievable": true,
+            "parameters": {
+                "instance": "brightness",
+                "unit": "unit.percent",
+                "range": {
+                    "min": 0,
+                    "max": 100,
+                    "precision": 10
+                }
+            }
+        },
+        {
+            "type": "devices.capabilities.color_setting",
+            "parameters": {
+                "color_model": "hsv",
+                "temperature_k": {
+                    "min": 2700,
+                    "max": 9000,
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "type": "devices.capabilities.on_off"
+        }
+    ],
+    "device_info": {
+        "manufacturer": "_TZ3210_r5afgmkl",
+        "model": "TS0505B",
+        "hw_version": "1.1",
+        "sw_version": "1.2"
+    }
+}
