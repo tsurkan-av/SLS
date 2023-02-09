@@ -81,6 +81,59 @@
 			]
 		},
 		{
+			"name": "Увлажнитель",
+			"description": "pig_humidifier",
+			"id": "0xA4C138AAA29895A8",
+			"room": "Спальня",
+			"type": "devices.types.socket",
+			"custom_data": {
+				"type": "socket",
+				"states": ["state", "current", "voltage", "power", "backlight_mode", "power_on_behavior"]
+			},
+			"capabilities": [{
+					"type": "devices.capabilities.on_off",
+					"retrievable": true
+				},
+				{
+					"type": "devices.capabilities.toggle",
+					"retrievable": true,
+					"parameters": {
+					 "instance": "backlight"
+					}
+				},
+				{
+					"type": "devices.capabilities.toggle",
+					"retrievable": true,
+					"parameters": {
+					 "instance": "controls_locked"
+					}
+				}
+			],
+			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+				 "instance": "amperage",
+				 "unit": "unit.ampere"
+				}
+			   }, {
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+				 "instance": "voltage",
+				 "unit": "unit.volt"
+				}
+			   }, {
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+				 "instance": "power",
+				 "unit": "unit.watt"
+				}
+			   }
+			]
+		},
+		{
 			"name": "Климат",
 			"description": "dht_bedroom",
 			"id": "0xA4C138E143F426BA",
