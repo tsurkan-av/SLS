@@ -12,7 +12,7 @@
 */
 const fetch = require("node-fetch"); // импорт node-fetch
 const slsUrl = "https://sls.tsurkan.keenetic.pro/api/";
-const slsToken = "?token=" + process.env.slsToken;
+const slsToken = `?token=${process.env.slsToken}`;
 
 module.exports.handler = async (event, context) => {
 	const request_type 	= event.request_type;
@@ -33,7 +33,7 @@ module.exports.handler = async (event, context) => {
 			const replacer = new RegExp('"', 'g')
 			const devicesQueryJson = JSON.stringify(devicesQuery).replace(replacer, '\\"');
 			slsApiFn = "scripts";
-			slsApiParam = "&action=evalFile&path=/funtik2.lua&param=" + devicesQueryJson;
+			slsApiParam = `&action=evalFile&path=/funtik.lua&param=${devicesQueryJson}`;
 			url = slsUrl + slsApiFn + slsToken + slsApiParam;
 			// запрос на управление. ответ не ждать, т.к. вроде бы не нужен он
 			devicesSLS = httpGet(url, true);
@@ -60,7 +60,7 @@ module.exports.handler = async (event, context) => {
 			const replacer = new RegExp('"', 'g')
 			const devicesQueryJson = JSON.stringify(devicesQuery).replace(replacer, '\\"');
 			slsApiFn = "scripts";
-			slsApiParam = "&action=evalFile&path=/funtik2.lua&param=" + devicesQueryJson;
+			slsApiParam = `&action=evalFile&path=/funtik.lua&param=${devicesQueryJson}`;
 			url = slsUrl + slsApiFn + slsToken + slsApiParam;
 			devicesSLS = await httpGet(url, true);
 			if (devicesSLS.success) {
@@ -76,7 +76,7 @@ module.exports.handler = async (event, context) => {
 		case "discovery": {
 			// получаю funtikData.json из SLS
 			slsApiFn = "storage";
-			slsApiParam = "&path=/int/funtikData2.json";
+			slsApiParam = "&path=/int/funtikData.json";
 			url = slsUrl + slsApiFn + slsToken + slsApiParam;
 			console.log(url);
 			const devicesGate = await httpGet(url, true);

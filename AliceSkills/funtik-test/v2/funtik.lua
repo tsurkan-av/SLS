@@ -91,44 +91,51 @@ elseif (query.request_type == "query") then
     out[_].capabilities = {}
     
     if (dev.custom_data.type == "light") then
-      for i = 1, #dev.custom_data.states do
-        local state = dev.custom_data.states[i]
-        out[_].capabilities[i] = {}
-        out[_].capabilities[i].state = {}
-        -- вкл/выкл
-        if (state == "state") then -- вкл/выкл
-          out[_].capabilities[i].type = "devices.capabilities.on_off"
-          out[_].capabilities[i].state.instance = "on"
-          if (zigbee.value(device, "state") == "ON") then
-            out[_].capabilities[i].state.value = true
-          else
-            out[_].capabilities[i].state.value = false
+      if (device == "SLS") then
+        
+      else
+        for i = 1, #dev.custom_data.states do
+          local state = dev.custom_data.states[i]
+          out[_].capabilities[i] = {}
+          out[_].capabilities[i].state = {}
+          -- вкл/выкл
+          if (state == "state") then -- вкл/выкл
+            out[_].capabilities[i].type = "devices.capabilities.on_off"
+            out[_].capabilities[i].state.instance = "on"
+            if (zigbee.value(device, "state") == "ON") then
+              out[_].capabilities[i].state.value = true
+            else
+              out[_].capabilities[i].state.value = false
+            end
+          elseif (state == "brightness") then  -- яркость
+            out[_].capabilities[i].type = "devices.capabilities.range"
+            out[_].capabilities[i].state.instance = "brightness"
+            -- вернуть надо значение 1-100
+            local brightness = zigbee.value(device, state)
+              -- расширить в начале диапазона 
+            if (brightness > 5 and brightness <= 255) then brightness = math.ceil(brightness / 2.55) end 
+            out[_].capabilities[i].state.value = brightness
+          elseif (state == "color") then  -- цвет
+            out[_].capabilities[i].type = "devices.capabilities.color_setting"
+            out[_].capabilities[i].state.instance = "rgb"
+              -- конвертирую XY в RGB int 
+            local value = fn.json_decode(zigbee.value(device, state))
+            local r,g,b = fn.cie_to_rgb(value.x, value.y)
+            value = fn.rgb_to_int(r,g,b)
+            out[_].capabilities[i].state.value = value
+            value = nil
+          elseif (state == "color_temp") then -- цветовая температура 
+            out[_].capabilities[i].type = "devices.capabilities.color_setting"
+            out[_].capabilities[i].state.instance = "temperature_k"
+            -- вернуть в кельвинах
+            out[_].capabilities[i].state.value = math.ceil(1000000 / zigbee.value(device, "color_temp"))
           end
-        elseif (state == "brightness") then  -- яркость
-          out[_].capabilities[i].type = "devices.capabilities.range"
-          out[_].capabilities[i].state.instance = "brightness"
-          -- вернуть надо значение 1-100
-          local brightness = zigbee.value(device, state)
-            -- расширить в начале диапазона 
-          if (brightness > 5 and brightness <= 255) then brightness = math.ceil(brightness / 2.55) end 
-          out[_].capabilities[i].state.value = brightness
-        elseif (state == "color") then  -- цвет
-          out[_].capabilities[i].type = "devices.capabilities.color_setting"
-          out[_].capabilities[i].state.instance = "rgb"
-            -- конвертирую XY в RGB int 
-          local value = fn.json_decode(zigbee.value(device, state))
-          local r,g,b = fn.cie_to_rgb(value.x, value.y)
-          value = fn.rgb_to_int(r,g,b)
-          out[_].capabilities[i].state.value = value
-          value = nil
-        elseif (state == "color_temp") then -- цветовая температура 
-          out[_].capabilities[i].type = "devices.capabilities.color_setting"
-          out[_].capabilities[i].state.instance = "temperature_k"
-          -- вернуть в кельвинах
-          out[_].capabilities[i].state.value = math.ceil(1000000 / zigbee.value(device, "color_temp"))
         end
       end
     elseif (dev.custom_data.type == "socket") then -- розетка
+      local function update_socket()
+        -- TODO переделать портянку на обработку функцией
+      end
       local capability_cnt = 0
       local property_cnt = 0
       for i = 1, #dev.custom_data.states do
@@ -187,6 +194,9 @@ elseif (query.request_type == "query") then
         out[_].properties[i].state.instance = state
         if (state == "pressure") then
           out[_].properties[i].state.value = zigbee.value(device, state) * 0.75
+        elseif (state == "battery") then
+          out[_].properties[i].state.instance = "battery_level"
+          out[_].properties[i].state.value = zigbee.value(device, state)
         else
           out[_].properties[i].state.value = zigbee.value(device, state)
         end

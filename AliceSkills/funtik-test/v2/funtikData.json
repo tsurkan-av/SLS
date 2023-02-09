@@ -81,6 +81,37 @@
 			]
 		},
 		{
+			"name": "Шлюз",
+			"description": "SLS control",
+			"id": "SLS",
+			"room": "Прихожая",
+			"type": "devices.types.light",
+			"custom_data": {"type": "led"},
+			"capabilities": [{
+				"type": "devices.capabilities.range",
+				"retrievable": false,
+				"parameters": {
+					"instance": "channel",
+					"random_access": true,
+					"range": {
+						"min": 0,
+						"max": 62,
+						"precision": 1
+					}
+				}
+			},
+			{
+					"type": "devices.capabilities.color_setting",
+					"retrievable": false,
+					"parameters": {"color_model": "rgb"}
+				},
+				{
+					"type": "devices.capabilities.on_off",
+					"retrievable": false
+				}
+			]
+		},
+		{
 			"name": "Увлажнитель",
 			"description": "pig_humidifier",
 			"id": "0xA4C138AAA29895A8",
@@ -141,9 +172,16 @@
 			"type": "devices.types.sensor",
 			"custom_data": {
 				"type": "sensor",
-				"states": ["temperature", "humidity"]
+				"states": ["temperature", "humidity", "battery"]
 			},
 			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "battery_level",
+					"unit": "unit.percent"
+				}
+			}, {
 				"type": "devices.properties.float",
 				"retrievable": true,
 				"parameters": {
@@ -167,9 +205,16 @@
 			"type": "devices.types.sensor",
 			"custom_data": {
 				"type": "sensor",
-				"states": ["temperature", "humidity"]
+				"states": ["temperature", "humidity", "battery"]
 			},
 			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "battery_level",
+					"unit": "unit.percent"
+				}
+			},{
 				"type": "devices.properties.float",
 				"retrievable": true,
 				"parameters": {
@@ -193,9 +238,16 @@
 			"type": "devices.types.sensor",
 			"custom_data": {
 				"type": "sensor",
-				"states": ["temperature", "humidity", "pressure"]
+				"states": ["temperature", "humidity", "pressure", "battery"]
 			},
 			"properties": [{
+				"type": "devices.properties.float",
+				"retrievable": true,
+				"parameters": {
+					"instance": "battery_level",
+					"unit": "unit.percent"
+				}
+			},{
 				"type": "devices.properties.float",
 				"retrievable": true,
 				"parameters": {
