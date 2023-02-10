@@ -21,8 +21,10 @@ local capability_cnt = 0
 local property_cnt = 0
 local fn = (loadfile "/int/func.lib")()
 local ststesMapSLS2YA = {
+  -- on_off map
   ON = true,
   OFF = false,
+  AUTO = false,
   state = {instance = "on", type = "devices.capabilities.on_off"},
   color = {instance = "rgb", type = "devices.capabilities.color_setting"},
   color_temp = {instance = "temperature_k", type = "devices.capabilities.color_setting"},
@@ -36,11 +38,13 @@ local ststesMapSLS2YA = {
   pressure = {instance = "pressure", type = "devices.properties.float"},
   temperature = {instance = "temperature", type = "devices.properties.float"},
   battery = {instance = "battery_level", type = "devices.properties.float"},
-  
-  
+  -- SLS
+  led_bri = {instance = "brightness", type = "devices.capabilities.range"},
+  led_color = {instance = "rgb", type = "devices.capabilities.color_setting"},
+  led_effect = {instance = "channel", type = "devices.capabilities.range"},
+  led_state = {instance = "on", type = "devices.capabilities.on_off"}
 }
-local function update_socket(capabilty, state, device, cnt)
-  -- TODO переделать портянку на обработку функцией
+local function update(capabilty, state, device, cnt)
   if (capabilty) then 
     capability_cnt = capability_cnt + 1
     out[cnt].capabilities[capability_cnt] = {}
@@ -54,14 +58,19 @@ local function update_socket(capabilty, state, device, cnt)
     out[cnt].properties[property_cnt].state = {}
     out[cnt].properties[property_cnt].state.instance = ststesMapSLS2YA[state].instance
   end
-  return zigbee.value(device, state)
+  if (device == "SLS_Led") then
+    return obj.get(device)
+  else
+    return zigbee.value(device, state)
+  end
 end
 
 if (Event.Param) then
   query = fn.json_decode(Event.Param, true)
 else
   --query = fn.json_decode('{"request_data": [{"id":"0xA4C138FD68EAA226","capabilities":[{"type":"devices.capabilities.color_setting","state":{"instance":"rgb","value":16749000 }},{"type":"devices.capabilities.on_off","state":{"instance":"on","value":false }}]}], "request_type": "action"}')
-  query = fn.json_decode('{"request_type":"query","request_data":[{"id":"0xA4C138FD68EAA226","custom_data":{"states": ["state", "brightness", "color_temp", "color"],"type":"socket"}}]}')
+  --query = fn.json_decode('{"request_type":"query","request_data":[{"id":"0xA4C138FD68EAA226","custom_data":{"states": ["state", "brightness", "color_temp", "color"],"type":"socket"}}]}')
+  query = fn.json_decode('{"request_type":"query","request_data":[{"id":"SLS_Led","custom_data":{"states": ["led_state", "led_bri", "led_effect", "led_color"],"type":"socket"}}]}')
   --query = fn.json_decode('{"request_type":"query","request_data":[{"id":"0xA4C138AAA29895A8","custom_data":{"states": ["state", "current", "voltage", "power", "backlight_mode", "power_on_behavior"],"type":"socket"}}]}')
 end
 
@@ -132,20 +141,38 @@ elseif (query.request_type == "query") then
         or (state == "backlight_mode") -- вкл/выкл подсветки кнопки
         or (state == "power_on_behavior") -- вкл/выкл поведения при откл питания розетки
         then 
-          local value = ststesMapSLS2YA[update_socket(true, state, device, dev_key)]
+          local value = ststesMapSLS2YA[update(true, state, device, dev_key)]
           out[dev_key].capabilities[capability_cnt].state.value = value
       elseif (state == "brightness") then -- яркость - расширить в начале диапазона 
-        local value = update_socket(true, state, device, dev_key)
+        local value = update(true, state, device, dev_key)
         if (value > 5 and value <= 255) then value = math.ceil(value / 2.55) end 
         out[dev_key].capabilities[capability_cnt].state.value = value
       elseif (state == "color") then -- цвет - конвертирую XY в RGB int 
-        local value = fn.json_decode(update_socket(true, state, device, dev_key))
+        local value = fn.json_decode(update(true, state, device, dev_key))
         local r,g,b = fn.cie_to_rgb(value.x, value.y)
         value = fn.rgb_to_int(r,g,b)
         out[dev_key].capabilities[capability_cnt].state.value = value
       elseif (state == "color_temp") then -- яркость - вернуть в кельвинах
-        local value = update_socket(true, state, device, dev_key)
+        local value = update(true, state, device, dev_key)
         out[dev_key].capabilities[capability_cnt].state.value = math.ceil(1000000 / value)
+      elseif (state == "led_state") then -- вкл/выкл SLS Led
+        local value = fn.json_decode(update(true, state, device, dev_key))
+        out[dev_key].capabilities[capability_cnt].state.value = ststesMapSLS2YA[value.mode]
+      elseif (state == "led_bri") then -- яркость SLS Led
+        local value = fn.json_decode(update(true, state, device, dev_key))
+        if (value.brightness > 5 and value.brightness <= 255) then value = math.ceil(value.brightness / 2.55) end 
+        out[dev_key].capabilities[capability_cnt].state.value = value
+      elseif (state == "led_color") then -- цвет SLS Led - конвертирую XY в RGB int 
+        local value = fn.json_decode(update(true, state, device, dev_key))
+        out[dev_key].capabilities[capability_cnt].state.value = fn.rgb_to_int(value.r, value.g, value.b)
+      elseif (state == "led_effect") then -- эффекты SLS Led - вернуть значение effect
+        local value = update(true, state, device, dev_key)
+        if (value.effect) then
+          out[dev_key].capabilities[capability_cnt].state.value = value.effect
+        else
+          out[dev_key].capabilities[capability_cnt].state.value = 0
+        end
+  
         -- свойства 
       elseif (state == "current") -- ток нагрузки
         or (state == "voltage") -- напряжение нагрузки
@@ -154,10 +181,10 @@ elseif (query.request_type == "query") then
         or (state == "humidity") -- влажность
         or (state == "battery") -- статус батареи
         then 
-          local value = update_socket(false, state, device, dev_key)
+          local value = update(false, state, device, dev_key)
           out[dev_key].properties[property_cnt].state.value = value
       elseif (state == "pressure") then -- давление
-          local value = update_socket(false, state, device, dev_key)
+          local value = update(false, state, device, dev_key)
           out[dev_key].properties[property_cnt].state.value = value * 0.75
       elseif (state == "SLS") then -- TODO обновления статуса led SLS
       end

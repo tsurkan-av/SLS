@@ -5,10 +5,7 @@
 			"id": "0x00158D0007503021",
 			"room": "Спальня",
 			"type": "devices.types.light",
-			"custom_data": {
-				"type": "light",
-				"states": ["state", "brightness", "color_temp"]
-			},
+			"custom_data": {"states": ["state", "brightness", "color_temp"]},
 			"capabilities": [{
 					"type": "devices.capabilities.range",
 					"retrievable": true,
@@ -45,10 +42,7 @@
 			"id": "0xA4C138FD68EAA226",
 			"room": "Спальня",
 			"type": "devices.types.light",
-			"custom_data": {
-				"type": "light",
-				"states": ["state", "brightness", "color_temp", "color"]
-			},
+			"custom_data": {"states": ["state", "brightness", "color_temp", "color"]},
 			"capabilities": [{
 					"type": "devices.capabilities.range",
 					"retrievable": true,
@@ -83,13 +77,26 @@
 		{
 			"name": "Шлюз",
 			"description": "SLS control",
-			"id": "SLS",
+			"id": "SLS_Led",
 			"room": "Прихожая",
 			"type": "devices.types.light",
-			"custom_data": {"type": "led"},
+			"custom_data": {"states": ["led_state", "led_bri", "led_effect", "led_color"]},
 			"capabilities": [{
 				"type": "devices.capabilities.range",
-				"retrievable": false,
+				"retrievable": true,
+				"parameters": {
+					"instance": "brightness",
+					"unit": "unit.percent",
+					"range": {
+						"min": 0,
+						"max": 100,
+						"precision": 1
+					}
+				}
+			},
+			{
+				"type": "devices.capabilities.range",
+				"retrievable": true,
 				"parameters": {
 					"instance": "channel",
 					"random_access": true,
@@ -102,12 +109,12 @@
 			},
 			{
 					"type": "devices.capabilities.color_setting",
-					"retrievable": false,
+					"retrievable": true,
 					"parameters": {"color_model": "rgb"}
 				},
 				{
 					"type": "devices.capabilities.on_off",
-					"retrievable": false
+					"retrievable": true
 				}
 			]
 		},
@@ -117,10 +124,7 @@
 			"id": "0xA4C138AAA29895A8",
 			"room": "Спальня",
 			"type": "devices.types.socket",
-			"custom_data": {
-				"type": "socket",
-				"states": ["state", "current", "voltage", "power", "backlight_mode", "power_on_behavior"]
-			},
+			"custom_data": {"states": ["state", "current", "voltage", "power", "backlight_mode", "power_on_behavior"]},
 			"capabilities": [{
 					"type": "devices.capabilities.on_off",
 					"retrievable": true
@@ -170,10 +174,7 @@
 			"id": "0xA4C138E143F426BA",
 			"room": "Спальня",
 			"type": "devices.types.sensor",
-			"custom_data": {
-				"type": "sensor",
-				"states": ["temperature", "humidity", "battery"]
-			},
+			"custom_data": {"states": ["temperature", "humidity", "battery"]},
 			"properties": [{
 				"type": "devices.properties.float",
 				"retrievable": true,
@@ -203,10 +204,7 @@
 			"id": "0xA4C138E7524A230B",
 			"room": "Кухня",
 			"type": "devices.types.sensor",
-			"custom_data": {
-				"type": "sensor",
-				"states": ["temperature", "humidity", "battery"]
-			},
+			"custom_data": {"states": ["temperature", "humidity", "battery"]},
 			"properties": [{
 				"type": "devices.properties.float",
 				"retrievable": true,
@@ -236,10 +234,7 @@
 			"id": "0x00158D00089762DB",
 			"room": "Улица",
 			"type": "devices.types.sensor",
-			"custom_data": {
-				"type": "sensor",
-				"states": ["temperature", "humidity", "pressure", "battery"]
-			},
+			"custom_data": {"states": ["temperature", "humidity", "pressure", "battery"]},
 			"properties": [{
 				"type": "devices.properties.float",
 				"retrievable": true,
@@ -270,10 +265,5 @@
 				}
 			}]
 		}
-	],
-	"objects": {
-		"name": "Люди",
-		"type": "personesTracker"
-
-	}
+	]
 }
