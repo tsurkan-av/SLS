@@ -15,42 +15,75 @@ color_temp
 запрос	{\"request_type\":\"action\",\"request_data\":[{\"id\":\"0x00158D0007503021\",\"capabilities\":[{\"type\":\"devices.capabilities.color_setting\",\"state\":{\"instance\":\"temperature_k\",\"value\":4500}}]}]}
 --]]
 
-local fn = (loadfile "/int/func.lib")()
--- TODO на доработку - уменьшить кол-во sw case
-local devices = {
-  capabilities = {"on_off", "range", "color_setting", "toggle"},
-  properties = {"event", "float"}
-}
-local states = {
-  state = {},
-  brightness = "brightness",
-  color = "rgb",
-  color_temp = "color_temp",
-}
-
+local out = {}
 local query = ""
+local capability_cnt = 0
+local property_cnt = 0
+local fn = (loadfile "/int/func.lib")()
+local ststesMapSLS2YA = {
+  ON = true,
+  OFF = false,
+  state = {instance = "on", type = "devices.capabilities.on_off"},
+  color = {instance = "rgb", type = "devices.capabilities.color_setting"},
+  color_temp = {instance = "temperature_k", type = "devices.capabilities.color_setting"},
+  brightness = {instance = "brightness", type = "devices.capabilities.range"},
+  backlight_mode = {instance = "backlight", type = "devices.capabilities.toggle"},
+  power_on_behavior = {instance = "controls_locked", type = "devices.capabilities.toggle"},
+  power = {instance = "power", type = "devices.properties.float"},
+  current = {instance = "amperage", type = "devices.properties.float"},
+  voltage = {instance = "voltage", type = "devices.properties.float"},
+  humidity = {instance = "humidity", type = "devices.properties.float"},
+  pressure = {instance = "pressure", type = "devices.properties.float"},
+  temperature = {instance = "temperature", type = "devices.properties.float"},
+  battery = {instance = "battery_level", type = "devices.properties.float"},
+  
+  
+}
+local function update_socket(capabilty, state, device, cnt)
+  -- TODO переделать портянку на обработку функцией
+  if (capabilty) then 
+    capability_cnt = capability_cnt + 1
+    out[cnt].capabilities[capability_cnt] = {}
+    out[cnt].capabilities[capability_cnt].type = ststesMapSLS2YA[state].type
+    out[cnt].capabilities[capability_cnt].state = {}
+    out[cnt].capabilities[capability_cnt].state.instance = ststesMapSLS2YA[state].instance
+  else
+    property_cnt = property_cnt + 1
+    out[cnt].properties[property_cnt] = {}
+    out[cnt].properties[property_cnt].type = ststesMapSLS2YA[state].type
+    out[cnt].properties[property_cnt].state = {}
+    out[cnt].properties[property_cnt].state.instance = ststesMapSLS2YA[state].instance
+  end
+  return zigbee.value(device, state)
+end
+
 if (Event.Param) then
   query = fn.json_decode(Event.Param, true)
 else
   --query = fn.json_decode('{"request_data": [{"id":"0xA4C138FD68EAA226","capabilities":[{"type":"devices.capabilities.color_setting","state":{"instance":"rgb","value":16749000 }},{"type":"devices.capabilities.on_off","state":{"instance":"on","value":false }}]}], "request_type": "action"}')
-  query = fn.json_decode('{"request_type":"query","request_data":[{"id":"0xA4C138AAA29895A8","custom_data":{"states": ["state", "current", "voltage", "power", "backlight_mode", "power_on_behavior"],"type":"socket"}}]}')
+  query = fn.json_decode('{"request_type":"query","request_data":[{"id":"0xA4C138FD68EAA226","custom_data":{"states": ["state", "brightness", "color_temp", "color"],"type":"socket"}}]}')
+  --query = fn.json_decode('{"request_type":"query","request_data":[{"id":"0xA4C138AAA29895A8","custom_data":{"states": ["state", "current", "voltage", "power", "backlight_mode", "power_on_behavior"],"type":"socket"}}]}')
 end
 
-local out = {}
 -- запрос на управление
 -- в action походу прилетает только одно действие, так что пох на тип ус-ва. вроде бы
 -- пока делаю безусловно. потом всё равно прилетает запрос состояния
 -- ответ формирую в YAFn
 if (query.request_type == "action") then 
-  for _, dev in pairs(query.request_data) do
+  for dev_key, dev in pairs(query.request_data) do
     local device = dev.id
     local dstState = ''
     -- разбираю умения (capabilities)
-    for _, capability in pairs(dev.capabilities) do
+    for capability_key, capability in pairs(dev.capabilities) do
       if (capability.state.instance == 'on') then -- вкл/выкл 
-        if (capability.state.value) then dstState = 'ON' else dstState = 'OFF' end
-        -- отправляю в устройство
-        if not (zigbee.set(device, 'state', dstState)) then print('error set on_off to ', device) end
+        if (device == "SLS") then
+        -- TODO управление led SLS
+
+        else
+          if (capability.state.value) then dstState = 'ON' else dstState = 'OFF' end
+          -- отправляю в устройство
+          if not (zigbee.set(device, 'state', dstState)) then print('error set on_off to ', device) end
+        end
       elseif (capability.state.instance == 'backlight') then -- вкл/выкл подсветки
         if (capability.state.value) then dstState = 'ON' else dstState = 'OFF' end
         -- отправляю в устройство
@@ -82,124 +115,51 @@ if (query.request_type == "action") then
   end
 -- запрос на обновление
 elseif (query.request_type == "query") then 
-  for _, dev in pairs(query.request_data) do
+  for dev_key, dev in pairs(query.request_data) do
     local device = dev.id
-    
-    out[_] = {}
-    out[_].id = dev.id
-    out[_].properties = {}
-    out[_].capabilities = {}
-    
-    if (dev.custom_data.type == "light") then
-      if (device == "SLS") then
-        
-      else
-        for i = 1, #dev.custom_data.states do
-          local state = dev.custom_data.states[i]
-          out[_].capabilities[i] = {}
-          out[_].capabilities[i].state = {}
-          -- вкл/выкл
-          if (state == "state") then -- вкл/выкл
-            out[_].capabilities[i].type = "devices.capabilities.on_off"
-            out[_].capabilities[i].state.instance = "on"
-            if (zigbee.value(device, "state") == "ON") then
-              out[_].capabilities[i].state.value = true
-            else
-              out[_].capabilities[i].state.value = false
-            end
-          elseif (state == "brightness") then  -- яркость
-            out[_].capabilities[i].type = "devices.capabilities.range"
-            out[_].capabilities[i].state.instance = "brightness"
-            -- вернуть надо значение 1-100
-            local brightness = zigbee.value(device, state)
-              -- расширить в начале диапазона 
-            if (brightness > 5 and brightness <= 255) then brightness = math.ceil(brightness / 2.55) end 
-            out[_].capabilities[i].state.value = brightness
-          elseif (state == "color") then  -- цвет
-            out[_].capabilities[i].type = "devices.capabilities.color_setting"
-            out[_].capabilities[i].state.instance = "rgb"
-              -- конвертирую XY в RGB int 
-            local value = fn.json_decode(zigbee.value(device, state))
-            local r,g,b = fn.cie_to_rgb(value.x, value.y)
-            value = fn.rgb_to_int(r,g,b)
-            out[_].capabilities[i].state.value = value
-            value = nil
-          elseif (state == "color_temp") then -- цветовая температура 
-            out[_].capabilities[i].type = "devices.capabilities.color_setting"
-            out[_].capabilities[i].state.instance = "temperature_k"
-            -- вернуть в кельвинах
-            out[_].capabilities[i].state.value = math.ceil(1000000 / zigbee.value(device, "color_temp"))
-          end
-        end
-      end
-    elseif (dev.custom_data.type == "socket") then -- розетка
-      local function update_socket()
-        -- TODO переделать портянку на обработку функцией
-      end
-      local capability_cnt = 0
-      local property_cnt = 0
-      for i = 1, #dev.custom_data.states do
-        local state = dev.custom_data.states[i]
-        -- вкл/выкл
-        if (state == "state") then -- вкл/выкл 
-          capability_cnt = capability_cnt + 1
-          out[_].capabilities[capability_cnt] = {}
-          out[_].capabilities[capability_cnt].type = "devices.capabilities.on_off"
-          out[_].capabilities[capability_cnt].state = {}
-          out[_].capabilities[capability_cnt].state.instance = "on"
-          if (zigbee.value(device, state) == "ON") then out[_].capabilities[capability_cnt].state.value = true else out[_].capabilities[capability_cnt].state.value = false end
-        elseif (state == "backlight_mode") then  -- вкл/выкл подсветки кнопки
-          capability_cnt = capability_cnt + 1
-          out[_].capabilities[capability_cnt] = {}
-          out[_].capabilities[capability_cnt].type = "devices.capabilities.toggle"
-          out[_].capabilities[capability_cnt].state = {}
-          out[_].capabilities[capability_cnt].state.instance = "backlight"
-          if (zigbee.value(device, state) == "ON") then out[_].capabilities[capability_cnt].state.value = true else out[_].capabilities[capability_cnt].state.value = false end
-        elseif (state == "power_on_behavior") then  -- вкл/выкл поведения при откл питания розетки
-          capability_cnt = capability_cnt + 1
-          out[_].capabilities[capability_cnt] = {}
-          out[_].capabilities[capability_cnt].type = "devices.capabilities.toggle"
-          out[_].capabilities[capability_cnt].state = {}
-          out[_].capabilities[capability_cnt].state.instance = "controls_locked"
-          if (zigbee.value(device, state) == "ON") then out[_].capabilities[capability_cnt].state.value = true else out[_].capabilities[capability_cnt].state.value = false end
-        elseif (state == "current") then  -- ток нагрузки
-          property_cnt = property_cnt + 1
-          out[_].properties[property_cnt] = {}
-          out[_].properties[property_cnt].type = "devices.properties.float"
-          out[_].properties[property_cnt].state = {}
-          out[_].properties[property_cnt].state.instance = "amperage"
-          out[_].properties[property_cnt].state.value = zigbee.value(device, state)
-        elseif (state == "voltage") then  -- напряжение нагрузки
-          property_cnt = property_cnt + 1
-          out[_].properties[property_cnt] = {}
-          out[_].properties[property_cnt].type = "devices.properties.float"
-          out[_].properties[property_cnt].state = {}
-          out[_].properties[property_cnt].state.instance = state
-          out[_].properties[property_cnt].state.value = zigbee.value(device, state)
-        elseif (state == "power") then  -- мощеость нагрузки
-          property_cnt = property_cnt + 1
-          out[_].properties[property_cnt] = {}
-          out[_].properties[property_cnt].type = "devices.properties.float"
-          out[_].properties[property_cnt].state = {}
-          out[_].properties[property_cnt].state.instance = state
-          out[_].properties[property_cnt].state.value = zigbee.value(device, state)
-        end
-      end
-    elseif (dev.custom_data.type == "sensor") then -- датчики
-      for i = 1, #dev.custom_data.states do
-        local state = dev.custom_data.states[i]
-        out[_].properties[i] = {}
-        out[_].properties[i].type = "devices.properties.float"
-        out[_].properties[i].state = {}
-        out[_].properties[i].state.instance = state
-        if (state == "pressure") then
-          out[_].properties[i].state.value = zigbee.value(device, state) * 0.75
-        elseif (state == "battery") then
-          out[_].properties[i].state.instance = "battery_level"
-          out[_].properties[i].state.value = zigbee.value(device, state)
-        else
-          out[_].properties[i].state.value = zigbee.value(device, state)
-        end
+    capability_cnt = 0
+    property_cnt = 0
+
+    out[dev_key] = {}
+    out[dev_key].id = dev.id
+    out[dev_key].properties = {}
+    out[dev_key].capabilities = {}
+      
+    for i = 1, #dev.custom_data.states do
+      local state = dev.custom_data.states[i]
+      -- умения
+      if (state == "state") -- вкл/выкл 
+        or (state == "backlight_mode") -- вкл/выкл подсветки кнопки
+        or (state == "power_on_behavior") -- вкл/выкл поведения при откл питания розетки
+        then 
+          local value = ststesMapSLS2YA[update_socket(true, state, device, dev_key)]
+          out[dev_key].capabilities[capability_cnt].state.value = value
+      elseif (state == "brightness") then -- яркость - расширить в начале диапазона 
+        local value = update_socket(true, state, device, dev_key)
+        if (value > 5 and value <= 255) then value = math.ceil(value / 2.55) end 
+        out[dev_key].capabilities[capability_cnt].state.value = value
+      elseif (state == "color") then -- цвет - конвертирую XY в RGB int 
+        local value = fn.json_decode(update_socket(true, state, device, dev_key))
+        local r,g,b = fn.cie_to_rgb(value.x, value.y)
+        value = fn.rgb_to_int(r,g,b)
+        out[dev_key].capabilities[capability_cnt].state.value = value
+      elseif (state == "color_temp") then -- яркость - вернуть в кельвинах
+        local value = update_socket(true, state, device, dev_key)
+        out[dev_key].capabilities[capability_cnt].state.value = math.ceil(1000000 / value)
+        -- свойства 
+      elseif (state == "current") -- ток нагрузки
+        or (state == "voltage") -- напряжение нагрузки
+        or (state == "power") -- мощеость нагрузки
+        or (state == "temperature") -- температура
+        or (state == "humidity") -- влажность
+        or (state == "battery") -- статус батареи
+        then 
+          local value = update_socket(false, state, device, dev_key)
+          out[dev_key].properties[property_cnt].state.value = value
+      elseif (state == "pressure") then -- давление
+          local value = update_socket(false, state, device, dev_key)
+          out[dev_key].properties[property_cnt].state.value = value * 0.75
+      elseif (state == "SLS") then -- TODO обновления статуса led SLS
       end
     end
   end
