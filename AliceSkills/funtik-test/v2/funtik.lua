@@ -38,7 +38,8 @@ local ststesMapSLS2YA = {
   pressure = {instance = "pressure", type = "devices.properties.float"},
   temperature = {instance = "temperature", type = "devices.properties.float"},
   battery = {instance = "battery_level", type = "devices.properties.float"},
-  -- SLS
+  -- SLS 
+  -- TODO добавить свойства мониторинга
   led_bri = {instance = "brightness", type = "devices.capabilities.range"},
   led_color = {instance = "rgb", type = "devices.capabilities.color_setting"},
   led_effect = {instance = "channel", type = "devices.capabilities.range"},
