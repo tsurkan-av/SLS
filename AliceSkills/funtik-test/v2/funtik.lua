@@ -60,6 +60,7 @@ local function update(capabilty, state, device, cnt)
     out[cnt].properties[property_cnt].state.instance = ststesMapSLS2YA[state].instance
   end
   if (device == "SLS_Led") then
+  -- TODO А нужен ли Объект?! /api/led отдает статус - проработать
     return obj.get(device)
   else
     return zigbee.value(device, state)
