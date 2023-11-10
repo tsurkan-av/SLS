@@ -24,7 +24,19 @@
 
 ### Настройка функции YCF
 
-
+- подготовить скрипт [index.js](/AliceSkills/funtik/index.js) с функцией
+- подготовить файл зависимостей [package.json](/AliceSkills/funtik/package.json)
+- [создать функцию YCF](https://cloud.yandex.ru/docs/functions/quickstart/create-function/node-function-quickstart) со следующими настройками
+  - Среда выполнения: `Node.js 16`
+  - Способ: `редактор кода`
+  - Точка входа: `index.handler`
+  - Таймаут, c: 5
+  - Память: дефолтных 128Мб достаточно 
+  - Переменные окружения:
+    - slsToken: API-токен SLS
+  - создать файл `index.js` и скопировать в него содержимое скрипта [index.js](/AliceSkills/funtik/index.js) с функцией
+  - создать файл `package.json` и скопировать в него содержимое файла зависимостей [package.json](/AliceSkills/funtik/package.json)
+- Сохранить изменения: сохранение запустит сборку новой версии функции
 
 ### Настройка авторизации OAuth в Яндекс ID 
 
