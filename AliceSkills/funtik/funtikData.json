@@ -1,0 +1,450 @@
+{
+  "devices": [
+    {
+      "name": "Люстра",
+      "description": "lmp_bedroom",
+      "id": "0x00158D0007503021",
+      "room": "Спальня",
+      "type": "devices.types.light",
+      "custom_data": {
+        "states": [
+          "state",
+          "brightness",
+          "color_temp"
+        ]
+      },
+      "capabilities": [
+        {
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "brightness",
+            "unit": "unit.percent",
+            "range": {
+              "min": 0,
+              "max": 100,
+              "precision": 1
+            }
+          }
+        },
+        {
+          "type": "devices.capabilities.color_setting",
+          "retrievable": true,
+          "parameters": {
+            "temperature_k": {
+              "min": 2700,
+              "max": 6500,
+              "precision": 1
+            }
+          }
+        },
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        }
+      ]
+    },
+    {
+      "name": "Ночник",
+      "description": "lmp_bedroom-nightlight-papa",
+      "id": "0xA4C138FD68EAA226",
+      "room": "Спальня",
+      "type": "devices.types.light",
+      "custom_data": {
+        "states": [
+          "state",
+          "brightness",
+          "color_temp",
+          "color"
+        ]
+      },
+      "capabilities": [
+        {
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "brightness",
+            "unit": "unit.percent",
+            "range": {
+              "min": 0,
+              "max": 100,
+              "precision": 1
+            }
+          }
+        },
+        {
+          "type": "devices.capabilities.color_setting",
+          "retrievable": true,
+          "parameters": {
+            "color_model": "rgb",
+            "temperature_k": {
+              "min": 2700,
+              "max": 6500,
+              "precision": 1
+            }
+          }
+        },
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        }
+      ]
+    },
+    {
+      "name": "Шлюз",
+      "description": "SLS control",
+      "id": "SLS_Led",
+      "room": "Прихожая",
+      "type": "devices.types.light",
+      "custom_data": {
+        "states": [
+          "led_state",
+          "led_bri",
+          "led_effect",
+          "led_color"
+        ]
+      },
+      "capabilities": [
+        {
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "brightness",
+            "unit": "unit.percent",
+            "range": {
+              "min": 0,
+              "max": 100,
+              "precision": 1
+            }
+          }
+        },
+        {
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "channel",
+            "random_access": true,
+            "range": {
+              "min": 0,
+              "max": 62,
+              "precision": 1
+            }
+          }
+        },
+        {
+          "type": "devices.capabilities.color_setting",
+          "retrievable": true,
+          "parameters": {
+            "color_model": "rgb"
+          }
+        },
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        }
+      ]
+    },
+    {
+      "name": "Аквариум",
+      "description": "pig_aquarium",
+      "id": "0xA4C138E56B96596D",
+      "room": "Спальня",
+      "type": "devices.types.socket",
+      "custom_data": {
+        "states": [
+          "state",
+          "current",
+          "voltage",
+          "power"
+        ]
+      },
+      "capabilities": [
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        }
+      ],
+      "properties": [
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "amperage",
+            "unit": "unit.ampere"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "voltage",
+            "unit": "unit.volt"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "power",
+            "unit": "unit.watt"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Медленноварка",
+      "description": "pig_slow-cooker",
+      "id": "0xA4C138AAA29895A8",
+      "room": "Кухня",
+      "type": "devices.types.socket",
+      "custom_data": {
+        "states": [
+          "state",
+          "current",
+          "voltage",
+          "power",
+          "backlight_mode",
+          "power_on_behavior"
+        ]
+      },
+      "capabilities": [
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        },
+        {
+          "type": "devices.capabilities.toggle",
+          "retrievable": true,
+          "parameters": {
+            "instance": "backlight"
+          }
+        },
+        {
+          "type": "devices.capabilities.toggle",
+          "retrievable": true,
+          "parameters": {
+            "instance": "controls_locked"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "amperage",
+            "unit": "unit.ampere"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "voltage",
+            "unit": "unit.volt"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "power",
+            "unit": "unit.watt"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Чайник",
+      "description": "pig_kettle",
+      "id": "0x70B3D52B6003485E",
+      "room": "Кухня",
+      "type": "devices.types.socket",
+      "custom_data": {
+        "states": [
+          "state",
+          "current",
+          "voltage",
+          "power",
+          "backlight_mode",
+          "power_on_behavior"
+        ]
+      },
+      "capabilities": [
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        },
+        {
+          "type": "devices.capabilities.toggle",
+          "retrievable": true,
+          "parameters": {
+            "instance": "backlight"
+          }
+        },
+        {
+          "type": "devices.capabilities.toggle",
+          "retrievable": true,
+          "parameters": {
+            "instance": "controls_locked"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "amperage",
+            "unit": "unit.ampere"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "voltage",
+            "unit": "unit.volt"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "power",
+            "unit": "unit.watt"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Климат",
+      "description": "dht_bedroom",
+      "id": "0xA4C138E143F426BA",
+      "room": "Спальня",
+      "type": "devices.types.sensor",
+      "custom_data": {
+        "states": [
+          "temperature",
+          "humidity",
+          "battery"
+        ]
+      },
+      "properties": [
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "battery_level",
+            "unit": "unit.percent"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "unit": "unit.temperature.celsius"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "humidity",
+            "unit": "unit.percent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Климат",
+      "description": "dht_kitchen",
+      "id": "0xA4C138E7524A230B",
+      "room": "Кухня",
+      "type": "devices.types.sensor",
+      "custom_data": {
+        "states": [
+          "temperature",
+          "humidity",
+          "battery"
+        ]
+      },
+      "properties": [
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "battery_level",
+            "unit": "unit.percent"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "unit": "unit.temperature.celsius"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "humidity",
+            "unit": "unit.percent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Климат",
+      "description": "dht_bedroom-out",
+      "id": "0x00158D00089762DB",
+      "room": "Улица",
+      "type": "devices.types.sensor",
+      "custom_data": {
+        "states": [
+          "temperature",
+          "humidity",
+          "pressure",
+          "battery"
+        ]
+      },
+      "properties": [
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "battery_level",
+            "unit": "unit.percent"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "unit": "unit.temperature.celsius"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "humidity",
+            "unit": "unit.percent"
+          }
+        },
+        {
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "pressure",
+            "unit": "unit.pressure.mmhg"
+          }
+        }
+      ]
+    }
+  ]
+}
