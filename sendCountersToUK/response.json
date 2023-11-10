@@ -1,0 +1,47 @@
+{
+    "auth": "OK",
+    "duration": 3.5,
+    "meters": {
+        "23-256124": {
+            "dateOld": "01.10.2023",
+            "ipuName": "ГВС",
+            "ipuSend": "Y",
+            "ipuZone": "Общая",
+            "value": 1.2,
+            "valueOld": "0.183"
+        },
+        "23-286253": {
+            "dateOld": "01.10.2023",
+            "ipuName": "ГВС",
+            "ipuSend": "N",
+            "ipuZone": "Общая",
+            "value": 9.03,
+            "valueOld": "0.513"
+        },
+        "23-364334": {
+            "dateOld": "01.10.2023",
+            "ipuName": "ХВС",
+            "ipuSend": "N",
+            "ipuZone": "Общая",
+            "value": 2.67,
+            "valueOld": "0.286"
+        },
+        "23-367214": {
+            "dateOld": "01.10.2023",
+            "ipuName": "ХВС",
+            "ipuSend": "N",
+            "ipuZone": "Общая",
+            "value": 7.91,
+            "valueOld": "0.558"
+        }
+    },
+    "result": {
+        "23-256124": {
+            "code": 406,
+            "data": [
+            ],
+            "status": "error",
+            "text": "Не корректный набор данных"
+        }
+    }
+}

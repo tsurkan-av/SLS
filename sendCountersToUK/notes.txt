@@ -1,0 +1,71 @@
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+$session.Cookies.Add((New-Object System.Net.Cookie("PHPSESSID", "iBbeH31oVuyp6hDTHIoVgjxuQH0fKFa6", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ga", "GA1.1.1392014488.1698733619", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ym_uid", "1698733622610417047", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ym_d", "1698733622", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ym_isad", "2", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ym_visorc", "w", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ga_WL41PK1PW5", "GS1.1.1698733619.1.0.1698733650.0.0.0", "/", ".ek-territory.ru")))
+$session.Cookies.Add((New-Object System.Net.Cookie("PHPSESSID", "VF9h056CN7NGfEhI7Gbv7GIoUZJ0ujtU", "/", ".lk.ek-territory.ru")))
+Invoke-WebRequest -UseBasicParsing -Uri "https://lk.ek-territory.ru/?login=yes" `
+-Method "POST" `
+-WebSession $session `
+-Headers @{
+"authority"="lk.ek-territory.ru"
+  "method"="POST"
+  "path"="/?login=yes"
+  "scheme"="https"
+  "accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+  "accept-encoding"="gzip, deflate, br"
+  "accept-language"="ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+  "cache-control"="max-age=0"
+  "origin"="https://lk.ek-territory.ru"
+  "referer"="https://lk.ek-territory.ru/"
+  "sec-ch-ua"="`"Chromium`";v=`"116`", `"Not)A;Brand`";v=`"24`", `"Google Chrome`";v=`"116`""
+  "sec-ch-ua-mobile"="?0"
+  "sec-ch-ua-platform"="`"Windows`""
+  "sec-fetch-dest"="document"
+  "sec-fetch-mode"="navigate"
+  "sec-fetch-site"="same-origin"
+  "sec-fetch-user"="?1"
+  "upgrade-insecure-requests"="1"
+} `
+-ContentType "application/x-www-form-urlencoded" `
+-Body "backurl=%2F&AUTH_FORM=Y&TYPE=AUTH&USER_LOGIN=%2B7%28902%29+123-45-67&USER_PASSWORD=password&USER_REMEMBER=Y"
+
+$res = Invoke-WebRequest -UseBasicParsing -Uri "https://lk.ek-territory.ru/?login=yes" `
+	-Method "POST" `
+	-ContentType "application/x-www-form-urlencoded" `
+	-Body "backurl=%2F&AUTH_FORM=Y&TYPE=AUTH&USER_LOGIN=%2B7%28902%29+123-45-67&USER_PASSWORD=password&USER_REMEMBER=Y" `
+	-SessionVariable SavedSession
+
+Как получить IAM-токен для аккаунта | Yandex Cloud - Документация
+https://cloud.yandex.ru/docs/iam/operations/iam-token/create
+$yandexPassportOauthToken = "OAuthToken"
+$Body = @{ yandexPassportOauthToken = "$yandexPassportOauthToken" } | ConvertTo-Json -Compress
+$token = Invoke-RestMethod -Method 'POST' -Uri 'https://iam.api.cloud.yandex.net/iam/v1/tokens' -Body $Body -ContentType 'Application/json' | Select-Object -ExpandProperty iamToken
+
+
+local url = "https://iam.api.cloud.yandex.net/iam/v1/tokens"
+local headers = ''
+local body = '{\"yandexPassportOauthToken\":\"OAuthToken\"}'
+local res = http.request2(url, "POST", headers, body)
+print(res)
+{
+ "iamToken": "t1.9euelZqNm4yTkZyLnJfOip2al4rMy-3rnpWalo6ey5TLmJbPjIrMjMaOjs3l8_c-K3xV-e9KH2Bn_t3z935ZeVX570ofYGf-zef1656Vmp2YmM6NkInLx8aLiY-Qx4qc7_zF656Vmp2YmM6NkInLx8aLiY-Qx4qc.zd1Z88PB2GIzC31Jyzq46GLRbIA1s5TO11zs0cQfIFYbzn9J8gvUv7RL2oQ0uj5d1EEJXypVVtYu6cqKM6-YAw",
+ "expiresAt": "2023-10-31T23:51:29.319287349Z"
+}
+
+Вызов функции с IAM токеном, полученным выше
+$res = wget -UseBasicParsing -Uri "https://functions.yandexcloud.net/d4e1pp0ac0ohimf5ra14" -Method Post `
+	-Headers @{
+	"Authorization"="Bearer $($token)"
+	"content-type"="application/x-www-form-urlencoded"
+	}
+
+$res = Invoke-WebRequest -UseBasicParsing -Uri "https://lk.ek-territory.ru/meters/" `
+-Method "POST" `
+-Headers @{
+  "cookie"="BITRIX_SM_UIDL=9024471111; BITRIX_SM_UIDH=xp5wKQBZ8G2YreLV8ZfzUuDLW0UE7IGV; PHPSESSID=W1ZY0C5iqcYpTYY43bkswQi67wbbGPxw"
+}
