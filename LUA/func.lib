@@ -1,12 +1,12 @@
 --[[-----------------------------------------------------------------------------
 Encode
-json.encode(val, add_escape, round_num)
+json_encode(val, add_escape, round_num)
   val         - mandatory array(table) for encoding
   add_escape  - option, if true then add escapeing chars to out
   round_num   - option, number round precision
 
 Decode
-json.decode(str, del_escape)
+json_decode(str, del_escape)
   str         - JSON string
   del_escape  - if true - deleting escapeing chars from <str>
 -------------------------------------------------------------------------------]]
