@@ -1,6 +1,6 @@
 # ZigBee-SLS
 
-Здесь буду выкладывать свои наработки для SLS
+Здесь буду выкладывать свои наработки для [SLS](https://slsys.github.io/Gateway/)
 
 ## [Навык Умного дома Яндекс для интеграции с SLS](/AliceSkills/funtik/Readme.md)
 ## [Отправка показаний счетчиков воды в УК без API](/sendCountersToUK/Readme.md)
