@@ -4,9 +4,11 @@
 
 ## Что даст прохождение этого квеста
 
-[Видео:](http://www.youtube.com/watch?v=Me6aceoHY_E)
+<!-- [Видео:](http://www.youtube.com/watch?v=Me6aceoHY_E) -->
 
 [![Видео](http://img.youtube.com/vi/Me6aceoHY_E/0.jpg)](http://www.youtube.com/watch?v=Me6aceoHY_E)
+
+Картинка кликабельна - под ней видео)
 <!-- https://youtu.be/Me6aceoHY_E -->
 
 ## Поддерживаемые устройства
