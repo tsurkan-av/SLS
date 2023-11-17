@@ -1,0 +1,185 @@
+[
+  {
+    "id": 1,
+    "room_id": 0,
+    "ieee": "0xA4C138E143F426BA",
+    "prop": "temperature",
+    "title": "Температура",
+    "type": "sensor",
+    "icon": "fa-thermometer-full",
+    "unit": "°C"
+  },
+  {
+    "id": 2,
+    "room_id": 0,
+    "ieee": "0xA4C138E143F426BA",
+    "prop": "humidity",
+    "title": "Влажность",
+    "type": "sensor",
+    "icon": "fa-tint",
+    "unit": "%"
+  },
+  {
+    "id": 3,
+    "room_id": 0,
+    "ieee": "0x00158D0007503021",
+    "prop": "state",
+    "title": "Люстра",
+    "type": "switch"
+  },
+  {
+    "id": 4,
+    "room_id": 0,
+    "ieee": "0x00158D0007503021",
+    "prop": "brightness",
+    "title": "Люстра",
+    "type": "dimmer",
+	"min":0,
+	"max":255
+  },
+  {
+    "id": 5,
+    "room_id": 0,
+    "ieee": "0xA4C138FD68EAA226",
+    "prop": "state",
+    "title": "Ночник",
+    "type": "switch"
+  },
+  {
+    "id": 6,
+    "room_id": 0,
+    "ieee": "0xA4C138E56B96596D",
+    "prop": "state",
+    "title": "Аквариум",
+    "type": "switch"
+  },
+  {
+    "id": 7,
+    "room_id": 0,
+    "ieee": "0xA4C1383C08AC4698",
+    "prop": "state",
+    "title": "Subwoofer",
+    "type": "switch"
+  },
+  {
+    "id": 1,
+    "room_id": 1,
+    "ieee": "0xA4C138E7524A230B",
+    "prop": "temperature",
+    "title": "Температура",
+    "type": "sensor",
+    "icon": "fa-thermometer-full",
+    "unit": "°C"
+  },
+  {
+    "id": 2,
+    "room_id": 1,
+    "ieee": "0xA4C138E7524A230B",
+    "prop": "humidity",
+    "title": "Влажность",
+    "type": "sensor",
+    "icon": "fa-tint",
+    "unit": "%"
+  },
+  {
+    "id": 3,
+    "room_id": 1,
+    "ieee": "0x70B3D52B6003485E",
+    "prop": "state",
+    "title": "Чайник",
+    "type": "switch"
+  },
+  {
+    "id": 4,
+    "room_id": 1,
+    "ieee": "0xA4C138AAA29895A8",
+    "prop": "state",
+    "title": "Кашеварка",
+    "type": "switch"
+  },
+  {
+    "id": 1,
+    "room_id": 3,
+    "ieee": "0x00158D00089762DB",
+    "prop": "temperature",
+    "title": "Температура",
+    "type": "sensor",
+    "icon": "fa-thermometer-full",
+    "unit": "°C"
+  },
+  {
+    "id": 2,
+    "room_id": 3,
+    "ieee": "0x00158D00089762DB",
+    "prop": "humidity",
+    "title": "Влажность",
+    "type": "sensor",
+    "icon": "fa-tint",
+    "unit": "%"
+  },
+  {
+    "id": 3,
+    "room_id": 3,
+    "ieee": "0x00158D00089762DB",
+    "prop": "pressure_mm",
+    "title": "Давление",
+    "type": "sensor",
+    "icon": "fa-cloud-download",
+    "unit": "mm"
+  },
+  {
+    "id": 1,
+    "room_id": 4,
+    "ieee": "0x00124B0027AEBF18",
+    "prop": "counter_1",
+    "title": "Кухня_ГВС",
+    "type": "value",
+    "unit": "Л"
+  },
+  {
+    "id": 2,
+    "room_id": 4,
+    "ieee": "0x00124B0027AEBF18",
+    "prop": "counter_2",
+    "title": "Кухня_ХВС",
+    "type": "value",
+    "unit": "Л"
+  },
+  {
+    "id": 3,
+    "room_id": 4,
+    "ieee": "0x00124B0027AEBF1C",
+    "prop": "counter_1",
+    "title": "Ванная_ГВС",
+    "type": "value",
+    "unit": "Л"
+  },
+  {
+    "id": 4,
+    "room_id": 4,
+    "ieee": "0x00124B0027AEBF1C",
+    "prop": "counter_2",
+    "title": "Ванная_ХВС",
+    "type": "value",
+    "unit": "Л"
+  },
+  {
+    "id": 5,
+    "room_id": 4,
+    "ieee": "0x00124B0027AEBF18",
+    "prop": "water_leak",
+    "title": "Кухня",
+    "type": "bin-sensor",
+    "icon": "fa-tint",
+    "unit": "Кухня"
+  },{
+    "id": 6,
+    "room_id": 4,
+    "ieee": "0x00124B0027AEBF1C",
+    "prop": "water_leak",
+    "title": "Ванная",
+    "type": "bin-sensor",
+    "icon": "fa-tint",
+    "unit": "Кухня"
+  }
+]
