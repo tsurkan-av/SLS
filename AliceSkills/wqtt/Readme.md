@@ -1,3 +1,4 @@
+[[toc]]
 # Контроль температуры удаленных объектов
 
 Все знакомы с проблемами ЖКХ в потрепанных жилых фондах. Мой дом не исключение. Зимой холодно и при отключениях воды завоздушиваются стояки ГВС. И в том и другом случае достаточно сложно доказывать УК, что температуры не соответствуют нормам. Особенно отопления.
@@ -6,14 +7,18 @@
 
 После публикации статьи о [навыке Алисы для умного дома Яндекс](https://github.com/tsurkan-av/SLS/blob/main/AliceSkills/funtik/Readme.md), который я разработал еще в начале 2023 года, один из пользователей отметил, что пользуется навыком [WQTT](https://www.wqtt.ru/). Я попробовал навык в работе. И, там же, в документации, наткнулся на проект [ESP Easy](https://letscontrolit.com/wiki/index.php/ESPEasy) - это универсальная прошивка, но для устройств на базе ESP.
 
-Далее: сенсор - это один сенсор DS18B20, датчик - это группа сенсоров.
-
 В итоге, на базе ESP получил решение, которое умеет:
 
 - собирать данные с 6-ти сенсоров типа DS18B20, подключенных по витой паре на шлейфе до 25 метров
 - отправлять данные на [SLS](https://github.com/slsys/Gateway) и [mqtt](https://www.wqtt.ru/) и далее в Алису для сбора исторических данных
 
+Далее: сенсор - это один сенсор DS18B20, датчик - это группа сенсоров.
+
 Let's begin
+
+## Что в итоге
+
+<img src="/AliceSkills/wqtt/img/Alice.png" width="45%"> <img src="/AliceSkills/wqtt/img/Alice2.png" width="45%">
 
 ## Железо
 
@@ -61,3 +66,107 @@ ID конкретных сенсоров можно определять как 
 ![](/AliceSkills/wqtt/img/plugin1wire.png)
 
 ![](/AliceSkills/wqtt/img/plugin1wire2.png)
+
+### Настройка передачи на SLS
+
+ESPEasy умеет отправлять собираемые данные на различные контроллеры по готовым совместимым с ними протоколам, а также можно настроить отправку самостоятельно на вкладке `Rules`
+
+Передавать данные я решил на SLS в Объект типа JSON. Это нужно для последующего вывода датчиков на дашборд SLS и возможно сбора данных в Influx DB - это если меня не устроит как собираются исторические данные в Алисе. Наработки на этот счет у меня уже [есть](https://github.com/tsurkan-av/SLS/tree/main/InfluxDB). Кстати, в Influx ESPEasy данные отправлять умеет сама.
+
+#### Настройка соединения с брокером MQTT
+
+Поскольку из ESPEasy данные передавать на MQTT я не собираюсь, то контроллеры настраивать нет необходимости. Однако, разберем как это делается.
+
+Напомню, что для передачи значений на контроллер из плагина, контроллер должен быть первым в списке.
+
+Для добавления контроллера переходим на вкладку [Controllers](https://espeasy.readthedocs.io/en/latest/Controller/_Controller.html), нажимаем кнопку `Add`, заполняем и сохраняем по кнопке `Submit`:
+
+![](/AliceSkills/wqtt/img/mqtt.png)
+
+![](/AliceSkills/wqtt/img/mqtt2.png)
+
+#### Настройка объектов в SLS
+
+в скрипт `init.lua` добавить код:
+
+```lua
+obj.setType('water', 'JSON') -- создать объект с типом JSON
+obj.setType('heating', 'JSON')
+obj.setShare('water', true) -- включить передачу на MQTT брокер
+obj.setShare('heating', true)
+obj.set('water', '{}') -- задать начальное значение для совместимости с некоторыми UI
+obj.set('heating', '{}')
+```
+
+#### Настройка передачи JSON в объекты SLS
+
+Для формирования JSON будем использовать подсистему правил ESPEasy.
+
+На вкладке `Tools` нажимаем кнопку `Advanced Settings` и включаем работу правил 
+
+![](/AliceSkills/wqtt/img/advSetRules.png)
+
+На вкладке [Rules](https://espeasy.readthedocs.io/en/latest/Rules/Rules.html) пишем правила:
+
+```javascript
+on water#All do
+  //Publish,%sysname%/water,'{"name":"{substring:0:5:%eventname%}","t_toilet":%eventvalue1%,"t_kitchen":%eventvalue2%}'
+  PostToHTTP,http://192.168.1.247/api/obj?token=slsAPItoken&name=water&value={"t_toilet":%eventvalue1%%2C"t_kitchen":%eventvalue2%%2C"name":"{substring:0:5:%eventname%}"}
+endon
+
+on heating#All do
+  //Publish,%sysname%/heating,'{"name":"{substring:0:7:%eventname%}","t_zal":%eventvalue1%,"t_kitchen":%eventvalue2%,"t_kinder":%eventvalue3%}'
+  PostToHTTP,http://192.168.1.247/api/obj?token=slsAPItoken&name=heating&value={"t_zal":%eventvalue1%%2C"t_kitchen":%eventvalue2%%2C"t_kinder":%eventvalue3%}
+endon
+```
+
+Правила отправляют данные с датчиков в объекты SLS посредством функции [obj.set()](https://github.com/slsys/Gateway/blob/master/docs/objects.md#objset). Также, в коде можно видеть закомментированные строчки кода `Publish...` - этим кодом данные можно напрямую отправлять на настроенный MQTT контроллер. В моем случае на MQTT данные отправляет SLS по изменению объектов.
+
+![](/AliceSkills/wqtt/img/slsObj.png)
+
+## Интеграция SLS с Алисой через навык WQTT
+
+Для интеграции с Алисой я использую свой навык [Умный фунтик](https://github.com/tsurkan-av/SLS/blob/main/AliceSkills/funtik/Readme.md). Также, из существующих навыков мне понравился сервис [WQTT](https://www.wqtt.ru), благодаря которому я и познакомился с ESPEasy. Данный проект будем интегрировать через него.
+
+WQTT - это ни что иное как облачный брокер Mosquitto с интеграцией в голосовые ассистенты. На данный момент (22.11.2023) доступны Алиса и Маруся.
+
+### Настройка SLS
+
+В меню `Settings` -> `Link` -> `MQTT Setup` прописать реквизиты доступа к брокеру, полученные при регистрации и доступные на [странице](https://dash.wqtt.ru/broker/) брокера.
+
+![](/AliceSkills/wqtt/img/mqttSLS.png)
+
+### Настройка WQTT
+
+На [странице Настройки](https://dash.wqtt.ru/settings/) добавляем устройство по кнопке `Добавить устройство` -> из выпадающего списка выбрать устройство типа Датчик. Далее заполнить Название датчика и комнату, в которой он установлен. Для удобства я создал виртуальную комнату `Контроль ЖКУ` Комнаты, если их нет, создаются, а существующее доступны к выбору из выпадающего списка. 
+
+![](/AliceSkills/wqtt/img/wqttAddSensor.png)
+
+Сохраняем и продолжаем. 
+
+![](/AliceSkills/wqtt/img/wqttAddSensor2.png)
+
+В созданный датчик добавляем сенсоры по кнопке `Добавить`. Тип датчика выбираем `Float` и прописываем топик вида `ZigbeeSLS/obj/heating$.t_kitchen`, где `heating` - это топик, а `t_kitchen` - это значение в [JSON payload](https://www.wqtt.ru/doc/json-path-dlya-datchikov/)
+
+![](/AliceSkills/wqtt/img/wqttAddSensor3.png)
+
+Сохраняем сенсор и сохраняем датчик. Также добавляем остальные датчики
+
+![](/AliceSkills/wqtt/img/wqttAddSensor4.png)
+
+На дашборде получаем:
+
+![](/AliceSkills/wqtt/img/wqttDash.png)
+
+### Добавление датчиков в УДЯ
+
+![](/AliceSkills/wqtt/img/aliceAdd.png)
+
+<img src="/AliceSkills/wqtt/img/Alice.png" width="45%"> <img src="/AliceSkills/wqtt/img/Alice2.png" width="45%">
+<img src="/img/dash_n7z_1.jpg" width="92%">
+
+Enjoy ;)
+
+---
+
+_PS. Вы можете поддержать меня [здесь](https://www.tinkoff.ru/cf/3y9klHwhFuV).  Любые суммы, даже самые маленькие мотивируют на разработку чего-то нового и улучшение уже существующего._
