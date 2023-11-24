@@ -1,6 +1,6 @@
 # Навык Алисы для голосового управления устройствами SLS и не только
 
-Для голосового управления устройствами [SLS](https://slsys.github.io/basic) я пробовал навык YaHa, когда еще был Home Assistant. Затем освоил навык [Домовенок Кузя](https://github.com/slsys/Gateway/blob/master/docs/lua_doc/voice_ctrl_Kuzia.md). Но он мне тоже по ряду причин не подошел. Так родилась идея собственного навыка и я приступил к разработке.
+Для голосового управления устройствами [SLS](https://slsys.github.io/basic) я пробовал навык YaHa, когда еще был Home Assistant. Затем освоил навык [Домовенок Кузя](https://github.com/slsys/Gateway/blob/master/lua_doc/voice_ctrl_Kuzia.md). Но он мне тоже по ряду причин не подошел. Так родилась идея собственного навыка и я приступил к разработке.
 
 ## Что даст прохождение этого квеста
 
@@ -134,7 +134,7 @@
 
 В случае каких либо проблем, для поиска ошибок можно использовать:
 
-- [лог SLS](https://github.com/slsys/Gateway/blob/master/docs/lua_doc/logging.md)
+- [лог SLS](https://github.com/slsys/Gateway/blob/master/lua_doc/logging.md)
 - лог функции YCF или логи своего сервера, если функцию развернули на нем
 - лог запросов на вкладке Тестирование в [Яндекс.Диалоги](https://dialogs.yandex.ru/developer)
 
