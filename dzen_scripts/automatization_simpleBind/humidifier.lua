@@ -38,9 +38,9 @@ if inRange then -- значит ночь 22:00 .. 5:50
 -- если текущее время НЕ попало в диапазон тишины
 else
   -- управляем увлажнителем в зависимости от влажности от 40% до 60%
-  if (Event.Param < 40) then -- включение: если вланость < минимума 
+  if (Event.State.Value < 40) then -- включение: если вланость < минимума 
     zigbee.set("0xA4C138E143F426BA", "state", "ON")
-  elseif (Event.Param > 60) then
+  elseif (Event.State.Value > 60) then
     zigbee.set("0xA4C138E143F426BA", "state", "OFF") -- выключение: если вланость > максимума
   end
 end
